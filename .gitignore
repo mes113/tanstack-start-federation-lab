@@ -1,0 +1,8 @@
+node_modules/
+dist/
+@mf-types/
+.upstream/
+.rsbuild/
+test-results/
+playwright-report/
+*.log
