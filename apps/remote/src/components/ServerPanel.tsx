@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  columnVisibilityFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  tableFeatures,
+  useTable,
   type ColumnDef,
   type PaginationState,
   type SortingState,
@@ -66,6 +70,13 @@ const money = (amount: number) =>
     maximumFractionDigits: 0,
   }).format(amount);
 const statuses = ["All", "Active", "Draft", "Archived"] as const;
+// The backend owns filtering, sorting and pagination; no client row models are needed.
+const features = tableFeatures({
+  columnVisibilityFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+});
 
 function ServerPanelView({ title, initialData }: ServerPanelProps) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -141,7 +152,7 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
     };
   }, [pagination, sorting, debouncedSearch, status, category, revision]);
 
-  const columns = useMemo<ColumnDef<Product>[]>(
+  const columns = useMemo<ColumnDef<typeof features, Product>[]>(
     () => [
       {
         id: "select",
@@ -226,7 +237,8 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
     ],
     [],
   );
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: data?.rows ?? [],
     columns,
     rowCount: data?.rowCount ?? 0,
@@ -240,9 +252,7 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
     getRowId: (row) => row.id,
     manualPagination: true,
     manualSorting: true,
-    manualFiltering: true,
     enableSortingRemoval: false,
-    getCoreRowModel: getCoreRowModel(),
   });
   function changeFilter(set: (value: string) => void, value: string) {
     set(value);
