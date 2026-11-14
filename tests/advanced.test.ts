@@ -578,6 +578,11 @@ deployTest(
       await expect(page.getByTestId("workspace-backend")).toContainText(
         "release v2",
       );
+      // SSR text arrives before hydration; do not stop the remote while its
+      // browser entry/chunks are still loading for the freshly reloaded page.
+      await expect(
+        page.getByRole("button", { name: "Refresh", exact: true }),
+      ).toBeEnabled();
       expect(
         (
           await fetch(`${base}/_lab/metrics`).then((response) =>
