@@ -1,0 +1,15 @@
+name: Feature or example request
+description: Suggest a useful federation scenario or handbook improvement.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would this help developers understand?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Suggested behavior or example
+    validations:
+      required: true

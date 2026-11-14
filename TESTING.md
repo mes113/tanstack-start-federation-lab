@@ -236,3 +236,18 @@ cookie allowlisting, private in-memory mutations and compatible/breaking backend
 It does not test a production identity provider, database durability, real CDN caching,
 mixed React versions or transparent replacement of already loaded host modules.
 The shared React version is deliberately identical across all four applications.
+
+## GitHub Actions for external contributions
+
+[CI](.github/workflows/ci.yml) runs on pull requests and pushes to main. It uses
+GitHub-hosted Ubuntu 24.04 runners and Node 24. Quality checks lint and formatting;
+separate production/development matrix jobs install Chromium, run the complete suites
+and typecheck the generated contracts. The final CI job requires every prerequisite
+to succeed and is the required branch check. No path filters skip documentation PRs.
+
+Tokens have contents:read, actions are SHA-pinned, checkout does not persist credentials,
+and setup-node package-manager caching is disabled. There are no deployment steps,
+repository secrets or privileged pull_request_target/workflow_run jobs. Failure artifacts
+contain local fixture diagnostics and are retained for seven days. Each PR's previous
+run is cancelled when superseded. Maintainer approval of external workflows is required
+by repository settings, including for repeat contributors.

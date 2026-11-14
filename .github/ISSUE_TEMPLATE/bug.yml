@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible issue with the reference app.
+body:
+  - type: markdown
+    attributes:
+      value: For security issues, use the private security-reporting link instead.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the route, selected scenario and minimal actions.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node/npm versions, browser and dev or production preview.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots
+      description: Remove credentials, cookies and private data before sharing.

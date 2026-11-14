@@ -97,7 +97,9 @@ Focused commands: `npm run test:unit`, `npm run test:multi`,
 - [Architecture](docs/ARCHITECTURE.md): SSR, transport, sessions, ownership and generated types.
 - [Development](docs/DEVELOPMENT.md): commands, environment variables, source layout and troubleshooting.
 - [Testing](TESTING.md): production/dev matrix, failure modes and verification evidence.
-- [Contributing](CONTRIBUTING.md): change and review the reference app.
+- [Contributing](CONTRIBUTING.md): fork, propose changes and understand required CI/reviews.
+- [Security](SECURITY.md): report vulnerabilities privately and review the automation trust boundary.
+- [Community conduct](CODE_OF_CONDUCT.md): expectations for participation.
 
 ## Scope and provenance
 
