@@ -6,6 +6,12 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
+      react-runtime:
+        patterns: [react, react-dom, "@types/react", "@types/react-dom"]
+        update-types: [minor, patch]
+      tanstack-runtime:
+        patterns: ["@tanstack/*"]
+        update-types: [minor, patch]
       development-tooling:
         dependency-type: development
         update-types: [minor, patch]
