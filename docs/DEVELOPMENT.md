@@ -5,8 +5,9 @@
 ## Requirements and lifecycle
 
 Use Node 22 (22.18+), Node 24 (24.11+), or Node 26+, with npm workspaces.
-The lockfile pins the reference dependencies, including the Module Federation preview
-package. Run commands from the repository root unless a workspace is specified.
+All four apps pin `@module-federation/tanstack` to the published npm version `0.2.0`.
+The lockfile records the registry tarball and integrity hash. Run commands from the
+repository root unless a workspace is specified.
 
 ```sh
 npm ci
@@ -118,7 +119,10 @@ then run `npm run typecheck`. The negative compile-time examples should continue
 reject invalid props, loader inputs and DTOs. Runtime DTO validation remains a separate
 responsibility for independently deployed backends.
 
-The dependency versions are intentionally pinned by the lockfile for this PR reference.
+Tracked text files use LF line endings through `.gitattributes`, including on Windows.
+This keeps a clean checkout compatible with the repository formatting check.
+
+The dependency versions are intentionally pinned by the lockfile for this reference.
 When updating the federation/Start packages, rerun both production and dev verification;
 function IDs, streaming behavior and type generation are part of the exercised surface.
 

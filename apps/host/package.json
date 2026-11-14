@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@module-federation/rsbuild-plugin": "2.9.2",
-    "@module-federation/tanstack": "https://pkg.pr.new/module-federation/tanstack/@module-federation/tanstack@391f4cc",
+    "@module-federation/tanstack": "0.2.0",
     "@rsbuild/core": "2.2.11",
     "@rsbuild/plugin-react": "2.1.1",
     "@types/node": "26.6.4",
