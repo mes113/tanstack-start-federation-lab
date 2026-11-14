@@ -135,6 +135,58 @@ export async function verify({ stopRemote, restartRemote }) {
     await action(() =>
       page.getByRole("button", { name: "Clear filters", exact: true }).click(),
     );
+    await action(() =>
+      page
+        .getByRole("combobox", { name: "Rows per page", exact: true })
+        .selectOption("16"),
+    );
+    await expect(page.getByTestId("product-row")).toHaveCount(16);
+    await expect(page.getByText("Page 1 of 6", { exact: true })).toBeVisible();
+    await action(() =>
+      page.getByRole("button", { name: "Last page", exact: true }).click(),
+    );
+    await expect(page.getByText("Page 6 of 6", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Next page", exact: true }),
+    ).toBeDisabled();
+    await action(() =>
+      page.getByRole("button", { name: "Previous page", exact: true }).click(),
+    );
+    await expect(page.getByText("Page 5 of 6", { exact: true })).toBeVisible();
+    await action(() =>
+      page.getByRole("button", { name: "First page", exact: true }).click(),
+    );
+    await expect(
+      page.getByRole("button", { name: "Previous page", exact: true }),
+    ).toBeDisabled();
+    await action(() =>
+      page
+        .getByRole("combobox", { name: "Rows per page", exact: true })
+        .selectOption("8"),
+    );
+    const firstCheckbox = page
+      .getByTestId("product-row")
+      .first()
+      .getByRole("checkbox");
+    await firstCheckbox.click();
+    await expect(firstCheckbox).toBeChecked();
+    await expect(
+      page.getByRole("checkbox", { name: "Select page", exact: true }),
+    ).toHaveAttribute("data-state", "indeterminate");
+    const singleDownloaded = page.waitForEvent("download");
+    await page
+      .getByRole("button", { name: "Export selected", exact: true })
+      .click();
+    const singleCsv = await readFile(
+      await (await singleDownloaded).path(),
+      "utf8",
+    );
+    assert.equal(
+      singleCsv.split("\r\n").length,
+      2,
+      "CSV contains only the selected row",
+    );
+    await firstCheckbox.click();
     await page
       .getByRole("checkbox", { name: "Select page", exact: true })
       .click();

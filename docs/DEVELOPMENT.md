@@ -70,6 +70,25 @@ idempotency records; signing out alone does not reset that store.
 
 ## Configuration
 
+### Catalog table
+
+The catalog uses TanStack Table v9's `useTable` API. `ServerPanel.tsx` registers
+sorting, pagination, row selection and column visibility with `tableFeatures`;
+column definitions use `ColumnDef<typeof features, Product>` so their APIs stay
+typed. Column visibility supplies the visible-cell rendering API.
+
+Search and category/status filters are sent directly to the catalog server function.
+Sorting and pagination are controlled React state with `manualSorting` and
+`manualPagination`. No client filtering, sorting or pagination row models are
+registered: the backend returns the requested page and total count. SSR renders
+the preloaded page through the same table, and hydration reuses that data.
+
+When changing the table, run the production and development suites. The catalog
+regression covers page size, first/previous/next/last navigation, sorting, filters,
+single/page selection, indeterminate checkbox state, CSV and hydration.
+
+### Local fixture variables
+
 The default app needs no environment file. These variables are explicit local fixture
 controls, rather than a production deployment interface.
 
