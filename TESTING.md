@@ -207,10 +207,13 @@ post-GC heap growth over 200 logical SSR requests. The dev sample had p50 173.8 
 p95 420.8 ms and 0.0 MiB positive post-GC heap growth. These are local observations under
 different app modes, not a performance comparison or portable benchmark.
 
-The three discovered files are `tests/unit.test.ts` (24 cases),
+The four discovered files are `tests/unit.test.ts` (24 cases),
 `tests/legacy.test.ts` (2 cases covering the original catalog suite and all eleven
-multi-remote groups), and `tests/advanced.test.ts` (10 cases). Production discovers
-36 tests; dev runs 35 and explicitly skips the production-artifact deployment case.
+multi-remote groups), `tests/advanced.test.ts` (10 cases), and
+`tests/coverage-comment.test.ts` (22 checks for report validation, fork PR discovery,
+comment updates, pagination and stale-run protection). Production discovers
+58 tests; dev runs 57 and explicitly skips the production-artifact deployment case.
+The coverage command runs the 46 unit and comment-publisher tests.
 
 The guide also surfaced an early-interaction race in development: a remote button could
 be clicked before its federated handlers attached. Identity and workspace controls now stay
@@ -239,15 +242,69 @@ The shared React version is deliberately identical across all four applications.
 
 ## GitHub Actions for external contributions
 
+### Unit coverage in pull requests
+
+Run `npm run test:coverage` locally. This uses the dedicated
+[coverage configuration](rstest.coverage.config.ts) and the matching official
+`@rstest/coverage-istanbul` provider. It runs the unit suite without starting servers
+or interrupting a running demo. `npm run coverage:summary` prints a Markdown report.
+
+Each completed PR CI run creates or updates one **Unit test coverage** bot comment
+in the PR conversation. It shows all four percentages, covered/total counts, the
+tested commit and a link to the full report. If CI produced no report, the comment
+explicitly says coverage is unavailable instead of showing an earlier commit's numbers.
+Closed PRs and runs for an outdated head commit are skipped.
+
+Open **Checks → Coverage**, then the workflow run's summary, to see
+lines, statements, functions and branches, with a table for every file. Download
+the **unit-coverage** artifact and open `index.html` for highlighted uncovered lines.
+The artifact also contains `lcov.info` and `coverage-summary.json`, is uploaded even
+when tests or thresholds fail if a report was produced, and is retained for 14 days.
+
+The denominator includes all app and shared-package TypeScript/TSX/MJS source,
+including files never imported by unit tests and vendored shadcn/ui components.
+Generated route trees and declarations are excluded. This is **unit coverage**:
+the browser, SSR and backend processes started by E2E tests are not instrumented
+by this command. A low aggregate percentage does not mean the integration suite
+skipped those behaviors; it means they have no measured unit executions.
+
+Coverage thresholds protect the existing business-logic tests:
+
+| Scope                  | Lines / statements | Functions | Branches |
+| ---------------------- | ------------------ | --------- | -------- |
+| Session package        | 90%                | 100%      | 85%      |
+| Workspace store        | 90%                | 100%      | 90%      |
+| Runtime contract guard | 80%                | 100%      | 70%      |
+
+The session threshold is evaluated over the package's MJS files together. There is
+no global percentage gate yet; broad unit coverage is still incomplete and is
+shown explicitly rather than hidden by excluding UI files. Threshold failures
+fail the Coverage job and the required CI gate. Coverage reports stay out of Git.
+
+Tests and report generation use a read-only token. A separate
+[Coverage comment workflow](.github/workflows/coverage-comment.yml) runs after CI,
+with `actions: read`, `contents: read` and `pull-requests: write` for its posting job.
+It checks out only the default branch, installs no project dependencies and never
+executes PR code or downloaded files. It reads only validated numeric coverage
+totals; GitHub's API supplies the PR identity and current commit. The same flow
+handles fork PRs with an empty workflow-run PR association. Comments from users
+are never edited, even if they copy the bot's marker.
+
+The comment workflow must first be merged to the default branch to become active.
+Subsequent completed PR CI runs will then publish comments automatically. No
+external service or repository secret is required. The existing approval policy
+for running fork PR tests remains in effect.
+
 [CI](.github/workflows/ci.yml) runs on pull requests and pushes to main. It uses
 GitHub-hosted Ubuntu 24.04 runners and Node 24. Quality checks lint and formatting;
 separate production/development matrix jobs install Chromium, run the complete suites
 and typecheck the generated contracts. The final CI job requires every prerequisite
 to succeed and is the required branch check. No path filters skip documentation PRs.
 
-Tokens have contents:read, actions are SHA-pinned, checkout does not persist credentials,
+The CI token has contents:read; the separate comment job has the scoped permissions
+described above. Actions are SHA-pinned, checkout does not persist credentials,
 and setup-node package-manager caching is disabled. There are no deployment steps,
-repository secrets or privileged pull_request_target/workflow_run jobs. Failure artifacts
+repository secrets or pull_request_target jobs. Failure artifacts
 contain local fixture diagnostics and are retained for seven days. Each PR's previous
 run is cancelled when superseded. Maintainer approval of external workflows is required
 by repository settings, including for repeat contributors.

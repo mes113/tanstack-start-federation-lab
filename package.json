@@ -17,6 +17,8 @@
     "test": "node scripts/test.mjs preview",
     "test:dev": "node scripts/test.mjs dev",
     "test:unit": "rstest run tests/unit.test.ts",
+    "test:coverage": "rstest run --config rstest.coverage.config.ts",
+    "coverage:summary": "node scripts/coverage-summary.mjs",
     "test:advanced": "node scripts/test.mjs preview tests/advanced.test.ts",
     "test:multi": "node scripts/test.mjs preview tests/legacy.test.ts",
     "test:multi:dev": "node scripts/test.mjs dev tests/legacy.test.ts",
@@ -28,6 +30,7 @@
   "devDependencies": {
     "@rslint/core": "^0.10.1",
     "@rstest/core": "^0.12.6",
+    "@rstest/coverage-istanbul": "0.12.6",
     "@rstest/playwright": "^0.12.6",
     "@tailwindcss/postcss": "^4.3.5",
     "playwright": "^1.65.0",

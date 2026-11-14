@@ -1,5 +1,10 @@
 # Federation Lab
 
+[![CI](https://github.com/mes113/tanstack-start-federation-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mes113/tanstack-start-federation-lab/actions/workflows/ci.yml?query=branch%3Amain)
+[![Module Federation TanStack 0.2.0](https://img.shields.io/badge/Module_Federation_TanStack-0.2.0-blue)](https://www.npmjs.com/package/@module-federation/tanstack/v/0.2.0)
+[![Rsbuild 2.3.2](https://img.shields.io/badge/Rsbuild-2.3.2-ff6347)](https://www.npmjs.com/package/@rsbuild/core/v/2.3.2)
+[![Tests with Rstest](https://img.shields.io/badge/tested_with-Rstest-f7c94b)](TESTING.md)
+
 An interactive reference app for **TanStack Start + Module Federation + Rsbuild**:
 one host, two TanStack Start remotes, and one plain React remote.
 Remote components call their own private server functions through the host. Federation
@@ -7,6 +12,10 @@ exposes component modules; server-function modules are never exposed directly.
 
 The handbook combines live examples, SSR-highlighted code, ownership outlines, and
 reproducible checks with **Rstest**, **Rslint**, **shadcn/ui**, and **TanStack Table**.
+
+Every PR includes a **Coverage** check and an automatically updated comment with unit
+coverage percentages, plus a downloadable HTML/LCOV report. Run `npm run test:coverage` locally;
+see [coverage scope and thresholds](TESTING.md#unit-coverage-in-pull-requests).
 
 ## Run locally
 

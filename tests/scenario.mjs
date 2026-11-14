@@ -117,10 +117,9 @@ export async function verify({ stopRemote, restartRemote }) {
     await action(() =>
       page.getByRole("button", { name: "Clear filters", exact: true }).click(),
     );
+    await page.getByRole("combobox", { name: "Category", exact: true }).click();
     await action(() =>
-      page
-        .getByRole("combobox", { name: "Category", exact: true })
-        .selectOption("Stationery"),
+      page.getByRole("option", { name: "Stationery", exact: true }).click(),
     );
     for (const row of await page.getByTestId("product-row").allTextContents())
       assert.ok(row.includes("Stationery"));
@@ -135,10 +134,11 @@ export async function verify({ stopRemote, restartRemote }) {
     await action(() =>
       page.getByRole("button", { name: "Clear filters", exact: true }).click(),
     );
+    await page
+      .getByRole("combobox", { name: "Rows per page", exact: true })
+      .click();
     await action(() =>
-      page
-        .getByRole("combobox", { name: "Rows per page", exact: true })
-        .selectOption("16"),
+      page.getByRole("option", { name: "16", exact: true }).click(),
     );
     await expect(page.getByTestId("product-row")).toHaveCount(16);
     await expect(page.getByText("Page 1 of 6", { exact: true })).toBeVisible();
@@ -159,10 +159,11 @@ export async function verify({ stopRemote, restartRemote }) {
     await expect(
       page.getByRole("button", { name: "Previous page", exact: true }),
     ).toBeDisabled();
+    await page
+      .getByRole("combobox", { name: "Rows per page", exact: true })
+      .click();
     await action(() =>
-      page
-        .getByRole("combobox", { name: "Rows per page", exact: true })
-        .selectOption("8"),
+      page.getByRole("option", { name: "8", exact: true }).click(),
     );
     const firstCheckbox = page
       .getByTestId("product-row")

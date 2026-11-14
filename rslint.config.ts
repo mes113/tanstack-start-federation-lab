@@ -10,6 +10,7 @@ export default defineConfig([
       ".rstack-reference/**",
       ".rstest/**",
       "test-results/**",
+      "coverage/**",
     ],
   },
   js.configs.recommended,

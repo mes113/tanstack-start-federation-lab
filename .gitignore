@@ -8,4 +8,5 @@ dist/
 .rstest/
 test-results/
 playwright-report/
+coverage/
 *.log

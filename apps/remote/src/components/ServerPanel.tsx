@@ -38,6 +38,14 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { Skeleton } from "./ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import {
   Table,
   TableBody,
@@ -370,19 +378,24 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
             Live catalog
           </span>
         </div>
-        <div className="table-tabs" role="tablist" aria-label="Product status">
-          {statuses.map((tab) => (
-            <button
-              key={tab}
-              role="tab"
-              aria-selected={status === tab}
-              onClick={() => changeFilter(setStatus, tab)}
-            >
-              {tab === "All" ? "All products" : tab}
-              <span>{data?.counts[tab] ?? "–"}</span>
-            </button>
-          ))}
-        </div>
+        <Tabs
+          value={status}
+          onValueChange={(value) => changeFilter(setStatus, value)}
+          activationMode="manual"
+        >
+          <TabsList
+            className="table-tabs"
+            variant="line"
+            aria-label="Product status"
+          >
+            {statuses.map((tab) => (
+              <TabsTrigger key={tab} value={tab}>
+                {tab === "All" ? "All products" : tab}
+                <span>{data?.counts[tab] ?? "–"}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
         <div className="table-toolbar">
           <div className="search-field">
             <Search size={17} />
@@ -395,13 +408,17 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
             />
           </div>
           <div className="toolbar-actions">
-            <label className="category-filter">
-              <SlidersHorizontal size={15} />
-              <select
-                aria-label="Category"
-                value={category}
-                onChange={(e) => changeFilter(setCategory, e.target.value)}
-              >
+            <Select
+              value={category}
+              onValueChange={(value) => changeFilter(setCategory, value)}
+            >
+              <SelectTrigger aria-label="Category" className="category-filter">
+                <SlidersHorizontal size={15} />
+                <SelectValue>
+                  {category === "All" ? "All categories" : category}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper" align="end">
                 {[
                   "All",
                   "Electronics",
@@ -409,12 +426,12 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
                   "Home & living",
                   "Stationery",
                 ].map((c) => (
-                  <option key={c} value={c}>
+                  <SelectItem key={c} value={c}>
                     {c === "All" ? "All categories" : c}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
-            </label>
+              </SelectContent>
+            </Select>
             <Button
               variant="outline"
               size="icon"
@@ -474,7 +491,9 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
                         }
                       >
                         {header.column.getCanSort() ? (
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="xs"
                             className="sort-button"
                             onClick={header.column.getToggleSortingHandler()}
                           >
@@ -489,7 +508,7 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
                             ) : (
                               <ArrowUpDown size={13} />
                             )}
-                          </button>
+                          </Button>
                         ) : (
                           flexRender(
                             header.column.columnDef.header,
@@ -556,21 +575,29 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
               : "0 products"}
           </p>
           <div className="pagination-controls">
-            <label>
-              Rows per page{" "}
-              <select
-                aria-label="Rows per page"
-                value={pagination.pageSize}
+            <div className="page-size-control">
+              <span id="catalog-page-size-label">Rows per page</span>
+              <Select
+                value={String(pagination.pageSize)}
                 disabled={loading}
-                onChange={(e) => table.setPageSize(Number(e.target.value))}
+                onValueChange={(value) => table.setPageSize(Number(value))}
               >
-                {[8, 16, 32].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <SelectTrigger
+                  aria-labelledby="catalog-page-size-label"
+                  size="sm"
+                  className="page-size-select"
+                >
+                  <SelectValue>{pagination.pageSize}</SelectValue>
+                </SelectTrigger>
+                <SelectContent position="popper" align="end">
+                  {[8, 16, 32].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <span>
               Page {pagination.pageIndex + 1} of{" "}
               {Math.max(1, table.getPageCount())}
