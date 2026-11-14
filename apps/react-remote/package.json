@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@module-federation/runtime": "2.9.2",
+    "@module-federation/runtime": "2.9.3",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
