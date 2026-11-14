@@ -3,6 +3,16 @@
 Start with the [README](README.md), [development reference](docs/DEVELOPMENT.md),
 [architecture](docs/ARCHITECTURE.md) and [test matrix](TESTING.md).
 
+## Send a contribution
+
+Fork the repository, create a topic branch in your fork and open a pull request against
+main. You do not need collaborator or write access. Describe the change and its validation
+using the PR template. Maintainers review external workflow runs before approving them;
+that approval permits CI to run and is separate from approving the PR for merge.
+
+Read [SECURITY.md](SECURITY.md) before reporting vulnerabilities and follow the
+[community conduct policy](CODE_OF_CONDUCT.md). Never include real credentials or private data.
+
 ## Make a change
 
 1. Install with `npm ci` and run the first `npm run build` before relying on generated remote types.
@@ -24,3 +34,18 @@ limitations, such as in-memory persistence or compatibility requirements for dep
 
 Keep local fixture identities, signing keys and fault controls clearly identified as demo
 infrastructure. Preserve upstream license notices when adapting shared UI components.
+
+## Required checks and maintainer review
+
+The CI workflow runs lint/format checks and both production and development Rstest suites
+on GitHub-hosted Linux runners. Each integration run generates remote declarations before
+type checking. Its final CI gate fails if a required job fails, is cancelled or is skipped.
+
+Main requires a PR, resolved review conversations and a successful, current CI check. Force
+pushes and branch deletion are blocked. Code owners review contributions, and new commits
+dismiss stale approvals. The owner has a PR-only exception from review requirements to
+handle self-authored PRs; it does not bypass required CI or permit direct pushes to main.
+
+Workflow actions are pinned by commit SHA, checkout credentials are not persisted, and
+automatic package-manager caching is disabled for untrusted PR execution. Do not add
+secrets, write permissions or self-hosted runners to PR jobs.
