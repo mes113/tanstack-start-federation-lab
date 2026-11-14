@@ -239,6 +239,43 @@ The shared React version is deliberately identical across all four applications.
 
 ## GitHub Actions for external contributions
 
+### Unit coverage in pull requests
+
+Run `npm run test:coverage` locally. This uses the dedicated
+[coverage configuration](rstest.coverage.config.ts) and the matching official
+`@rstest/coverage-istanbul` provider. It runs the unit suite without starting servers
+or interrupting a running demo. `npm run coverage:summary` prints a Markdown report.
+
+On each PR, open **Checks → Coverage**, then the workflow run's summary, to see
+lines, statements, functions and branches, with a table for every file. Download
+the **unit-coverage** artifact and open `index.html` for highlighted uncovered lines.
+The artifact also contains `lcov.info` and `coverage-summary.json`, is uploaded even
+when tests or thresholds fail if a report was produced, and is retained for 14 days.
+
+The denominator includes all app and shared-package TypeScript/TSX/MJS source,
+including files never imported by unit tests and vendored shadcn/ui components.
+Generated route trees and declarations are excluded. This is **unit coverage**:
+the browser, SSR and backend processes started by E2E tests are not instrumented
+by this command. A low aggregate percentage does not mean the integration suite
+skipped those behaviors; it means they have no measured unit executions.
+
+Coverage thresholds protect the existing business-logic tests:
+
+| Scope                  | Lines / statements | Functions | Branches |
+| ---------------------- | ------------------ | --------- | -------- |
+| Session package        | 90%                | 100%      | 85%      |
+| Workspace store        | 90%                | 100%      | 90%      |
+| Runtime contract guard | 80%                | 100%      | 70%      |
+
+The session threshold is evaluated over the package's MJS files together. There is
+no global percentage gate yet; broad unit coverage is still incomplete and is
+shown explicitly rather than hidden by excluding UI files. Threshold failures
+fail the Coverage job and the required CI gate. Coverage reports stay out of Git.
+
+The report uses GitHub's job summary and artifacts with a read-only token. It needs
+no external service, secret, PR write permission or privileged workflow and runs
+for fork PRs under the repository's existing contributor approval policy.
+
 [CI](.github/workflows/ci.yml) runs on pull requests and pushes to main. It uses
 GitHub-hosted Ubuntu 24.04 runners and Node 24. Quality checks lint and formatting;
 separate production/development matrix jobs install Chromium, run the complete suites
