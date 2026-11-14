@@ -45,8 +45,8 @@ Install the E2E browser once with `npx playwright install chromium`.
 
 For unit coverage, run `npm run test:coverage`, open `coverage/index.html`, or run
 `npm run coverage:summary` for a Markdown table. This command needs no browser or
-running servers. PRs have a separate Coverage check with a summary and downloadable
-HTML/LCOV report; see [coverage scope and thresholds](../TESTING.md#unit-coverage-in-pull-requests).
+running servers. PRs have a separate Coverage check, an automatically updated comment
+and a downloadable HTML/LCOV report; see [coverage scope and thresholds](../TESTING.md#unit-coverage-in-pull-requests).
 Free application ports 3004–3007 and test proxy port 3016 before process-owned E2E runs.
 See [TESTING.md](../TESTING.md) for runner behavior and artifact locations.
 

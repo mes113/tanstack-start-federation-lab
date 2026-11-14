@@ -1,7 +1,7 @@
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  include: ["tests/unit.test.ts"],
+  include: ["tests/unit.test.ts", "tests/coverage-comment.test.ts"],
   testEnvironment: "node",
   coverage: {
     enabled: true,

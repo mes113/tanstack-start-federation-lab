@@ -39,7 +39,8 @@ infrastructure. Preserve upstream license notices when adapting shared UI compon
 
 Run `npm run test:coverage` when changing application logic. Open `coverage/index.html`
 to inspect untested branches; do not commit generated reports. PRs expose unit coverage
-in the Coverage check and the workflow summary, with a downloadable HTML report.
+in an automatically updated bot comment, the Coverage check and the workflow summary,
+with a downloadable HTML report.
 See [coverage scope and thresholds](TESTING.md#unit-coverage-in-pull-requests).
 
 The CI workflow runs lint/format checks, unit coverage thresholds, and both production and development Rstest suites

@@ -31,3 +31,11 @@ Do not execute an unfamiliar contributor branch on a workstation containing cred
 Do not use a privileged pull_request_target or workflow_run job to execute PR code or
 consume its artifacts as trusted release input. Dependency updates are reviewed PRs and
 are not automatically merged.
+
+Coverage comments use a separate `workflow_run` job with scoped PR comment write
+permission. It runs only default-branch code, installs no project dependencies,
+and treats downloaded coverage JSON as untrusted numeric display data. It never
+executes artifact contents or checks out the PR. PR identity and the current head
+commit are verified through GitHub's API; closed and stale PR runs are skipped.
+This reporting exception does not grant write credentials to the test jobs or
+make coverage artifacts trusted build or release input.

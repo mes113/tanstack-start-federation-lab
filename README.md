@@ -13,8 +13,8 @@ exposes component modules; server-function modules are never exposed directly.
 The handbook combines live examples, SSR-highlighted code, ownership outlines, and
 reproducible checks with **Rstest**, **Rslint**, **shadcn/ui**, and **TanStack Table**.
 
-Every PR includes a **Coverage** check with a unit coverage summary and downloadable
-HTML/LCOV report. Run `npm run test:coverage` locally;
+Every PR includes a **Coverage** check and an automatically updated comment with unit
+coverage percentages, plus a downloadable HTML/LCOV report. Run `npm run test:coverage` locally;
 see [coverage scope and thresholds](TESTING.md#unit-coverage-in-pull-requests).
 
 ## Run locally
