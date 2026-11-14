@@ -4,3 +4,6 @@ dist
 routeTree.gen.ts
 package-lock.json
 test-results
+.mf
+.rstack-reference
+.rstest

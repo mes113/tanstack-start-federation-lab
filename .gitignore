@@ -3,6 +3,9 @@ dist/
 @mf-types/
 .upstream/
 .rsbuild/
+.mf/
+.rstack-reference/
+.rstest/
 test-results/
 playwright-report/
 *.log

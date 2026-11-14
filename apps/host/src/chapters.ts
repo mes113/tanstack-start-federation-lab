@@ -1,0 +1,80 @@
+export const catalogChapter = {
+  number: "02 / DATA & SSR",
+  title: "A remote that owns its data",
+  description:
+    "Search a real product catalog. Trace how initial HTML and later browser requests reach the same remote backend.",
+  question: "Can the host render remote data before JavaScript runs?",
+  expected:
+    "Eight product rows are in the initial HTML. Search and pagination then call the catalog backend through the host.",
+  file: "apps/host/src/routes/index.tsx",
+  code: `// Host route loader: preload through the component module.
+const remote = await catalogRemote.load();
+const initialData = await remote.default.preload();
+
+// The remote owns the table and its private server function.
+<ServerPanel title="Products" initialData={initialData} />
+
+// After hydration, its calls use the host namespace:
+// POST /_federation/catalog/_serverFn/<id>`,
+  command: "npm run test:multi\nnpm run typecheck",
+  checks: [
+    "Table rows and backend identity exist in SSR HTML.",
+    "Hydration reuses the loader result without another browser RPC.",
+    "Search, filters, pagination, CSV and backend recovery work.",
+  ],
+};
+export const resilienceChapter = {
+  number: "04 / ERRORS & RECOVERY",
+  title: "Compose it. Break it. Recover it.",
+  description:
+    "Four independent applications share one page. Introduce a failure and see how far it propagates.",
+  question: "Does one failing remote take the whole page down?",
+  expected:
+    "A remote failure has a visible fallback while healthy modules stay usable. A host loader failure produces a page-level error.",
+  file: "apps/host/src/routes/lab.tsx",
+  code: `// Each component loads independently in the route loader.
+await Promise.all([
+  catalogRemote.load(),
+  ordersRemote.load(),
+  warehouseRemote.load(),
+]);
+
+// Each rendered module gets its own error boundary.
+<RemoteBoundary name="Orders">
+  <Suspense fallback={<RemoteError name="Orders" />}>
+    <Orders initialData={data.orders.data} />
+  </Suspense>
+</RemoteBoundary>
+// See the source for complete loading and fallback handling.`,
+  command: "npm run test:multi\nnpm run test:advanced",
+  checks: [
+    "Catalog, orders and a plain React remote render together with JS disabled.",
+    "Backend errors, timeouts and React render failures have isolated fallbacks.",
+    "A restarted remote recovers while healthy modules continue working.",
+  ],
+};
+export const sessionChapter = {
+  number: "03 / SESSIONS & WRITES",
+  title: "One session. Independent access decisions.",
+  description:
+    "Use a private notes app to explore identity forwarding, permissions, retries and out-of-order requests.",
+  question: "Who decides whether a federated request is allowed?",
+  expected:
+    "The orders backend verifies the session. Alice can write, Bob gets 403, and guests cannot read private notes.",
+  file: "apps/host/src/start.ts",
+  code: `// Host: forward only the allowed session cookie.
+orders: {
+  origin: "http://127.0.0.1:3006",
+  headers: ({ request }) => ({
+    cookie: forwardSessionCookie(request?.headers.get("cookie")),
+  }),
+}
+// The remote verifies the signed session independently.
+// Its store checks the role and ownership for every write.`,
+  command: "npm run test:advanced\nnpm run typecheck",
+  checks: [
+    "Signed sessions stay isolated across SSR and browser requests.",
+    "Writes enforce role, validation, idempotency and version checks.",
+    "Stale responses cannot replace a newer search or route state.",
+  ],
+};

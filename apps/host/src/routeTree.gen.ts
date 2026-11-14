@@ -10,33 +10,91 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GettingStartedRouteImport } from './routes/getting-started'
+import { Route as GuideRouteImport } from './routes/guide'
+import { Route as LabRouteImport } from './routes/lab'
+import { Route as ScenariosRouteImport } from './routes/scenarios'
+import { Route as TypesRouteImport } from './routes/types'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GettingStartedRoute = GettingStartedRouteImport.update({
+  id: '/getting-started',
+  path: '/getting-started',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideRoute = GuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabRoute = LabRouteImport.update({
+  id: '/lab',
+  path: '/lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScenariosRoute = ScenariosRouteImport.update({
+  id: '/scenarios',
+  path: '/scenarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TypesRoute = TypesRouteImport.update({
+  id: '/types',
+  path: '/types',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/getting-started': typeof GettingStartedRoute
+  '/guide': typeof GuideRoute
+  '/lab': typeof LabRoute
+  '/scenarios': typeof ScenariosRoute
+  '/types': typeof TypesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/getting-started': typeof GettingStartedRoute
+  '/guide': typeof GuideRoute
+  '/lab': typeof LabRoute
+  '/scenarios': typeof ScenariosRoute
+  '/types': typeof TypesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/getting-started': typeof GettingStartedRoute
+  '/guide': typeof GuideRoute
+  '/lab': typeof LabRoute
+  '/scenarios': typeof ScenariosRoute
+  '/types': typeof TypesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/getting-started' | '/guide' | '/lab' | '/scenarios' | '/types'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/getting-started' | '/guide' | '/lab' | '/scenarios' | '/types'
+  id:
+    | '__root__'
+    | '/'
+    | '/getting-started'
+    | '/guide'
+    | '/lab'
+    | '/scenarios'
+    | '/types'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GettingStartedRoute: typeof GettingStartedRoute
+  GuideRoute: typeof GuideRoute
+  LabRoute: typeof LabRoute
+  ScenariosRoute: typeof ScenariosRoute
+  TypesRoute: typeof TypesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +106,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/getting-started': {
+      id: '/getting-started'
+      path: '/getting-started'
+      fullPath: '/getting-started'
+      preLoaderRoute: typeof GettingStartedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide': {
+      id: '/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof GuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab': {
+      id: '/lab'
+      path: '/lab'
+      fullPath: '/lab'
+      preLoaderRoute: typeof LabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenarios': {
+      id: '/scenarios'
+      path: '/scenarios'
+      fullPath: '/scenarios'
+      preLoaderRoute: typeof ScenariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/types': {
+      id: '/types'
+      path: '/types'
+      fullPath: '/types'
+      preLoaderRoute: typeof TypesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GettingStartedRoute: GettingStartedRoute,
+  GuideRoute: GuideRoute,
+  LabRoute: LabRoute,
+  ScenariosRoute: ScenariosRoute,
+  TypesRoute: TypesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

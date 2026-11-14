@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdir, readFile } from "node:fs/promises";
-import { chromium, expect } from "@playwright/test";
+import { chromium } from "playwright";
+import { expect } from "@rstest/playwright";
 
 const host = "http://127.0.0.1:3005";
 const remote = "http://127.0.0.1:3004";

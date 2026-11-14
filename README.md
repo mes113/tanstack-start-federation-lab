@@ -1,146 +1,120 @@
-# Folio — TanStack Start federation lab
+# Federation Lab
 
-A host shell and a remote catalog page built with **TanStack Start + Module Federation + Rsbuild**.
-The interface uses **shadcn/ui** components, Tailwind CSS 4, Lucide, and **TanStack Table v8**.
-The remote backend owns a demo catalog of 96 products. Search, sorting, filtering, and
-pagination run in the remote's server function; the browser receives only the requested page.
+An interactive reference app for **TanStack Start + Module Federation + Rsbuild**:
+one host, two TanStack Start remotes, and one plain React remote.
+Remote components call their own private server functions through the host. Federation
+exposes component modules; server-function modules are never exposed directly.
 
-## Getting started
+The handbook combines live examples, SSR-highlighted code, ownership outlines, and
+reproducible checks with **Rstest**, **Rslint**, **shadcn/ui**, and **TanStack Table**.
 
-Use Node.js 22.18+ or 24.11+ and npm. Tested with Node 24.22.1 on Windows.
+## Run locally
+
+Use a Node.js version supported by [package.json](package.json): Node 22 (22.18+), Node 24 (24.11+),
+or Node 26+. The reference was validated with Node 24.22.1 and npm on Windows.
+Ports **3004–3007** must be available. The build downloads generated types from temporary local remote previews.
 
 ```sh
+git clone https://github.com/mes113/tanstack-start-federation-lab.git
+cd tanstack-start-federation-lab
 npm ci
 npm run build
 npm run dev
 ```
 
-- [Host / shell](http://127.0.0.1:3005/)
-- [Standalone remote](http://127.0.0.1:3004/)
+Open **[the handbook overview](http://127.0.0.1:3005/guide)**.
+The build prepares remote containers, generated route trees and type archives.
+Development starts the remotes before the host. Stop with Ctrl+C in the terminal
+that started the app. To preview built artifacts, stop dev and run `npm run preview`.
 
-The first build generates route trees and remote types. Development starts the remote,
-waits for its manifest, and then starts the host. For production preview, stop development,
-run `npm run build`, then `npm run preview`. Do not run both modes on the same ports.
+![Federation Lab handbook](docs/images/guide.png)
 
-## Interface
+## Explore the handbook
 
-The host owns the sidebar, workspace header, breadcrumbs, and page shell. The remote
-owns the catalog heading, statistics, table, and loading and error states.
+| Topic             | Local route                                               | What it demonstrates                                                                       |
+| ----------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Overview          | [/guide](http://127.0.0.1:3005/guide)                     | Architecture, learning path and source map.                                                |
+| Getting started   | [/getting-started](http://127.0.0.1:3005/getting-started) | Setup, remote registration and the first request.                                          |
+| Data & SSR        | [/](http://127.0.0.1:3005/)                               | A 96-product catalog with remote-owned filtering, sorting, pagination and CSV export.      |
+| Sessions & writes | [/scenarios](http://127.0.0.1:3005/scenarios)             | Signed sessions, private notes, permissions, retries, version conflicts and request races. |
+| Errors & recovery | [/lab](http://127.0.0.1:3005/lab)                         | Three remotes, fault injection, isolated fallbacks and recovery.                           |
+| Type safety       | [/types](http://127.0.0.1:3005/types)                     | Generated props and preload declarations, plus separate runtime DTO checks.                |
 
-- Server-side search by product name, SKU, and category with a 300 ms debounce.
-- Status and category filters, with a clear-filters action.
-- Server-side sorting by name, price, and inventory.
-- Pagination with page sizes of 8, 16, or 32 rows.
-- Row selection and CSV export of selected rows or the current page.
-- Loading skeletons, an empty state, and retry when the backend is unavailable.
-- A responsive shell and a horizontally scrollable table on small screens.
-- Connection details below the table showing the remote backend's PID and response time.
+Each topic has **Example / Code / Tests** views. Switching views preserves the mounted
+example. Tabs support arrow keys, Home and End; the mobile menu offers the same topics.
+Tests shows commands and expected behavior, rather than executing commands in the browser.
 
-## SSR and server-function transport
+**Show app boundaries** labels host and remote UI ownership. The setting survives client
+navigation and resets on reload. The sidebar identifies the apps used by the example;
+Runtime details lists their ports. Neither feature is a live service-health monitor.
 
-Federation exposes **only `./ServerPanel`**. The host never directly imports or exposes
-the server-functions module or `listProducts`.
+![Host, orders and plain React UI ownership](docs/images/boundaries.png)
 
-```text
-Initial request to the host
-  → host route loader
-  → ServerPanel.preload() from the remote component module
-  → listProducts in the remote Node container
-  → HTTP request to the remote backend :3004
-  → table rows, statistics, and data in the server-rendered HTML
+Follow the [hands-on walkthrough](docs/WALKTHROUGH.md) for actions and expected results.
 
-Table interaction after hydration
-  → remote component event handler
-  → listProducts
-  → POST /_federation/catalog/_serverFn/<id> on the host :3005
-  → createRemoteServerFunctions in the host middleware
-  → remote backend :3004
-```
+## How it works
 
-`preload` is a component-owned method for loading initial data, rather than a direct
-server-function export. The host passes its result back to the component as `initialData`.
-Hydration reuses that result without an additional browser RPC. The standalone remote
-uses the same `preload` method in its route loader. Table data is present before JavaScript
-runs; subsequent interactions call server functions without reloading the page.
+| Application | Local origin                                  | Ownership                                                                |
+| ----------- | --------------------------------------------- | ------------------------------------------------------------------------ |
+| Host        | [127.0.0.1:3005](http://127.0.0.1:3005/guide) | Handbook, loaders, SSR composition and server-function forwarding.       |
+| Catalog     | [127.0.0.1:3004](http://127.0.0.1:3004/)      | TanStack Start table, catalog backend and component-owned preload.       |
+| Orders      | [127.0.0.1:3006](http://127.0.0.1:3006/)      | TanStack Start orders panel, private notes, authorization and mutations. |
+| Warehouse   | [127.0.0.1:3007](http://127.0.0.1:3007/)      | Plain React checklist: SSR inside the host, CSR when opened standalone.  |
 
-The remote sets `serverFns.base` to `/_federation/catalog/_serverFn`.
-The host uses the official `createRemoteServerFunctions` forwarder, without a local
-transport fork. The data is a demo fixture, with no database or persistent writes.
-Authentication and cookie forwarding are outside this example's scope.
+On a page request, the host loads a remote component module, calls its preload, and
+renders the returned data into HTML. Hydration reuses that data. Browser interactions
+call the remote's private server function through the host's namespaced gateway, for
+example `POST /_federation/catalog/_serverFn/<id>`.
 
-## Remote types
+The host consumes generated declarations from all three remotes. Props, loader inputs,
+DTOs and the SSR wrapper are type checked without handwritten remote module shims.
+See [architecture and contracts](docs/ARCHITECTURE.md) for the request paths and source map.
 
-The remote generates `@mf-types.zip` and `@mf-types.d.ts`, advertised by its manifest.
-The host downloads the archive using the official DTS consumer with `typesOnBuild`
-and `abortOnError`. The build runs a temporary remote preview while the host builds
-and downloads its types.
+## Verify locally
 
-`apps/host/tsconfig.json` maps `catalog/*` to `./@mf-types/catalog/*`.
-There are no handwritten `declare module "catalog/..."` shims or imports of remote
-source files in the host. The types of `preload`, `initialData`, table rows, and the
-literal `app: "catalog"` survive declaration generation.
-
-```sh
-npm run typecheck
-```
-
-`apps/host/src/remote-types.check.tsx` checks valid props and DTOs, the absence of `any`
-in the component contract, required `initialData`, incorrect `title` types, unknown
-props and fields, price types, statuses, and `preload` arguments. Invalid examples use
-`@ts-expect-error`: if these constraints disappear, TypeScript reports unused directives.
-The application does not import these examples at runtime.
-
-`skipLibCheck` follows the guidance in PR #22: the MF generator retains stylesheet
-imports and default re-exports in its declarations. The application contract is checked
-in strict mode. Generated declarations are excluded from Git; rebuild and run typecheck
-after changing the remote contract.
-
-## Validation
-
-With ports 3004 and 3005 available:
+Stop dev first. E2E tests own ports **3004–3007 and 3016** and deliberately restart apps.
 
 ```sh
 npx playwright install chromium
 npm test
 npm run test:dev
 npm run typecheck
+npm run lint
 npm run format:check
 ```
 
-`npm test` builds the project and tests production preview; `test:dev` tests development
-servers. Both commands manage and stop their own processes.
+The latest complete verification on 2026-11-14 passed **36 production tests** and
+**35 development tests with one intentional deployment skip**. Type checking, Rslint
+and formatting also passed. These are recorded local results, not live CI status.
 
-The browser scenario checks eight rows in the initial server-rendered HTML of both apps,
-remote backend data, no duplicate hydration RPC, downloaded declarations, POST requests
-through the host, pagination, search, sorting, both filters, the empty state, selection,
-CSV export, and the mobile viewport. It also stops the remote, checks a 502 response,
-restarts it, and verifies recovery with a new PID without restarting the host or reloading
-the page. Hydration errors and uncaught browser errors fail the test. Screenshots are
-saved to `test-results/`.
+Focused commands: `npm run test:unit`, `npm run test:multi`,
+`npm run test:multi:dev`, and `npm run test:advanced`.
+[TESTING.md](TESTING.md) explains coverage, assertions, artifacts and limitations.
 
-To test an outage manually, run the applications in separate terminals:
+## Documentation
 
-```sh
-npm run dev --workspace @lab/remote
-npm run dev --workspace @lab/host
-```
+- [Walkthrough](docs/WALKTHROUGH.md): try each topic, observe failures, and recover.
+- [Architecture](docs/ARCHITECTURE.md): SSR, transport, sessions, ownership and generated types.
+- [Development](docs/DEVELOPMENT.md): commands, environment variables, source layout and troubleshooting.
+- [Testing](TESTING.md): production/dev matrix, failure modes and verification evidence.
+- [Contributing](CONTRIBUTING.md): change and review the reference app.
 
-Once the host is loaded, stop the remote and click Refresh in the table to see the error.
-Restart the remote and click Try again. The PID under Connection details changes.
+## Scope and provenance
 
-## PR coverage and attribution
+Alice and Bob are local demo identities, not a production login system. Notes live in
+memory and reset when orders restarts. The session cookie lasts ten minutes; only that
+allowlisted cookie is forwarded to orders. This reference does not implement a database,
+production identity provider, CDN deployment or transparent upgrades of cached containers.
 
-`@module-federation/tanstack` is pinned to the PR #22 preview commit `391f4cc`, which
-includes PR #21. Both PRs had been merged when this project was prepared.
+`@module-federation/tanstack` is pinned to preview commit `391f4cc` in the lockfile.
+The project exercises [PR #21](https://github.com/module-federation/tanstack/pull/21)
+(server-function transport, recovery and colliding IDs) and
+[PR #22](https://github.com/module-federation/tanstack/pull/22) (remote type publishing
+and consumption). The [original prototype](https://github.com/mes113/module-federation-ssr)
+illustrates the host registry problem and the remote transport approach.
 
-- [PR #21](https://github.com/module-federation/tanstack/pull/21): POST, outage/recovery, and function-ID collision coverage.
-- [PR #22](https://github.com/module-federation/tanstack/pull/22): publishing and consuming remote types.
-- [Original mes113 prototype](https://github.com/mes113/module-federation-ssr): the host server-function registry problem and a remote transport solution.
-
-This example uses one remote; it does not test function-ID collisions between two remotes.
-The base configuration and router come from the MIT-licensed module-federation/tanstack
-examples; their notice is retained in `LICENSE.upstream`.
-Components in `apps/remote/src/components/ui` come from the official
-[shadcn/ui registry](https://ui.shadcn.com/r/styles/new-york-v4/button.json) (MIT), with
-`cn` imports adapted to the local utility. `scripts/add-ui.mjs` refreshes them.
-The shared shell and remote theme lives in `apps/theme.css`.
+Upstream configuration/router notices are retained in [LICENSE.upstream](LICENSE.upstream).
+Editable shadcn/ui primitives retain [LICENSE.shadcn](LICENSE.shadcn). The catalog uses
+registry components; the handbook's [Code Block](https://ui.shadcn.com/docs/components/radix/code-block)
+uses Shiki with a synchronous JavaScript regex engine so highlighted text is in the SSR HTML.
+The common theme is [apps/theme.css](apps/theme.css).

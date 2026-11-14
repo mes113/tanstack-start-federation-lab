@@ -1,49 +1,17 @@
-import { cleanup, run, start, stop, waitFor } from "./processes.mjs";
-
+import { buildLab, startLab } from "./lab.mjs";
+import { cleanup } from "./processes.mjs";
 const mode = process.argv[2] ?? "dev";
 for (const signal of ["SIGINT", "SIGTERM"])
-  process.on(signal, () => {
-    void cleanup().then(() => process.exit(0));
-  });
-async function build() {
-  await run("remote", "build");
-  const artifacts = start("remote", "preview");
-  try {
-    await waitFor("http://127.0.0.1:3004/mf-manifest.json", artifacts);
-    await run("host", "build");
-  } finally {
-    await stop(artifacts);
-  }
-}
+  process.on(signal, () => void cleanup().then(() => process.exit(0)));
 try {
-  if (["build", "test"].includes(mode)) await build();
-  if (mode === "build") process.exitCode = 0;
+  if (mode === "build") await buildLab();
   else {
-    const command = ["dev", "test:dev"].includes(mode) ? "dev" : "preview";
-    let remote = start("remote", command);
-    await waitFor("http://127.0.0.1:3004/mf-manifest.json", remote);
-    const host = start("host", command);
-    await waitFor("http://127.0.0.1:3005", host);
-    if (mode.startsWith("test")) {
-      const { verify } = await import("../tests/scenario.mjs");
-      await verify({
-        stopRemote: () => stop(remote),
-        restartRemote: async () => {
-          remote = start("remote", command);
-          await waitFor("http://127.0.0.1:3004/mf-manifest.json", remote);
-        },
-      });
-    } else {
-      console.log(
-        "Host: http://127.0.0.1:3005 | Remote: http://127.0.0.1:3004",
-      );
-      await new Promise((_, reject) => {
-        for (const child of [host, remote])
-          child.once("exit", (code) =>
-            reject(new Error(`Server exited (${code})`)),
-          );
-      });
-    }
+    const lab = await startLab(mode === "dev" ? "dev" : "preview");
+    console.log(
+      "Start here http://127.0.0.1:3005/guide | Catalog / | SSR /lab | Lessons /scenarios",
+    );
+    console.log("Catalog :3004 | Orders :3006 | Plain React :3007");
+    await lab.wait();
   }
 } catch (error) {
   console.error(error);
