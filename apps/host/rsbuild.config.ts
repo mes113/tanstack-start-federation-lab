@@ -14,13 +14,20 @@ export default defineConfig({
         name: "host",
         dev: { disableDynamicRemoteTypeHints: true },
         shareStrategy: "loaded-first",
-        remotes: { catalog: "catalog@http://127.0.0.1:3004/mf-manifest.json" },
+        remotes: {
+          catalog: "catalog@http://127.0.0.1:3004/mf-manifest.json",
+          orders: "orders@http://127.0.0.1:3006/mf-manifest.json",
+          warehouse: "warehouse@http://127.0.0.1:3007/mf-manifest.json",
+        },
         dts: {
           generateTypes: false,
-          consumeTypes: { typesOnBuild: true, abortOnError: true },
+          consumeTypes: {
+            typesOnBuild: true,
+            abortOnError: process.env.MF_OFFLINE_TYPES !== "1",
+          },
         },
       },
-      server: true,
+      server: { ssrEntryLoader: { fetchTimeoutMs: 1500 } },
     }),
   ],
 });

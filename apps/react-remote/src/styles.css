@@ -1,0 +1,73 @@
+.warehouse-panel {
+  background: #fff;
+  border: 1px solid #e6e3eb;
+  border-radius: 14px;
+  padding: 25px;
+  color: #463d50;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+}
+.warehouse-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.warehouse-panel header span {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #6c8f7c;
+}
+.warehouse-panel h2 {
+  font-size: 19px;
+  margin: 7px 0 15px;
+  font-weight: 600;
+}
+.warehouse-panel header b {
+  font-size: 11px;
+  font-weight: 400;
+  color: #8e8398;
+}
+.warehouse-panel > p {
+  font-size: 12px;
+  color: #8c8197;
+}
+.warehouse-panel label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 13px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #efebf2;
+}
+.warehouse-panel input {
+  accent-color: #7b62b5;
+}
+.warehouse-progress {
+  height: 5px;
+  border-radius: 8px;
+  background: #f0ecf5;
+  margin: 22px 0 10px;
+  overflow: hidden;
+}
+.warehouse-progress span {
+  display: block;
+  height: 100%;
+  background: #8cae9b;
+  transition: width 0.2s;
+}
+.warehouse-panel details {
+  font-size: 11px;
+  color: #9f93a9;
+  margin-top: 22px;
+}
+.warehouse-panel button {
+  background: #faf8fd;
+  border: 1px solid #e5deed;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  cursor: pointer;
+  color: #857090;
+}

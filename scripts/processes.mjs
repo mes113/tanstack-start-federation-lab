@@ -4,13 +4,26 @@ import { resolve } from "node:path";
 
 const cli = resolve("node_modules/@rsbuild/core/bin/rsbuild.js");
 const children = new Set();
-export function start(app, command) {
-  const child = spawn(process.execPath, [cli, command], {
-    cwd: resolve("apps", app),
-    stdio: "inherit",
-    windowsHide: true,
-    env: { ...process.env, NO_COLOR: "1" },
-  });
+export function start(app, command, env = {}) {
+  const child = spawn(
+    process.execPath,
+    [
+      ...(process.env.LAB_TEST_MODE === "1" ? ["--expose-gc"] : []),
+      cli,
+      command,
+    ],
+    {
+      cwd: resolve("apps", app),
+      stdio: "inherit",
+      windowsHide: true,
+      env: {
+        ...process.env,
+        NODE_ENV: command === "dev" ? "development" : "production",
+        NO_COLOR: "1",
+        ...env,
+      },
+    },
+  );
   children.add(child);
   child.once("exit", () => children.delete(child));
   return child;
@@ -30,8 +43,8 @@ export async function stop(child) {
 export async function cleanup() {
   await Promise.all([...children].map(stop));
 }
-export async function run(app, command) {
-  const child = start(app, command);
+export async function run(app, command, env = {}) {
+  const child = start(app, command, env);
   const [code] = await once(child, "exit");
   if (code !== 0) throw new Error(`${app} ${command} failed: ${code}`);
 }
@@ -42,7 +55,9 @@ export async function waitFor(url, child) {
       throw new Error(`Server exited: ${url}`);
     try {
       if ((await fetch(url, { signal: AbortSignal.timeout(3000) })).ok) return;
-    } catch {}
+    } catch {
+      /* The server can refuse requests while compiling; retry until the deadline. */
+    }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   throw new Error(`Timed out waiting for ${url}`);

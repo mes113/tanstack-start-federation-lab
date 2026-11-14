@@ -31,6 +31,6 @@ export function validateRemoteContract(data: Preloaded) {
   // @ts-expect-error Remote DTO prices are numbers.
   const invalidPrice: string = data.rows[0]!.price;
   // @ts-expect-error Unknown DTO fields must not turn into any.
-  data.rows[0]!.doesNotExist;
-  return { exactBackend, price, status, props, invalidPrice };
+  const invalidField = data.rows[0]!.doesNotExist;
+  return { exactBackend, price, status, props, invalidPrice, invalidField };
 }

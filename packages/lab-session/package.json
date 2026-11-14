@@ -1,0 +1,23 @@
+{
+  "name": "@lab/session",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit --allowJs --checkJs --types node --module nodenext --target es2022 index.mjs cookie.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.4",
+    "typescript": "7.0.2"
+  },
+  "exports": {
+    ".": {
+      "types": "./index.d.mts",
+      "default": "./index.mjs"
+    },
+    "./cookie": {
+      "types": "./cookie.d.mts",
+      "default": "./cookie.mjs"
+    }
+  }
+}

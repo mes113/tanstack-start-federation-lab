@@ -17,7 +17,9 @@
     "types": ["node"],
     "verbatimModuleSyntax": true,
     "paths": {
-      "catalog/*": ["./@mf-types/catalog/*"]
+      "catalog/*": ["./@mf-types/catalog/*"],
+      "orders/*": ["./@mf-types/orders/*"],
+      "warehouse/*": ["./@mf-types/warehouse/*"]
     }
   }
 }
