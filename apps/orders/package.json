@@ -14,7 +14,7 @@
     "@lab/session": "0.0.0",
     "@module-federation/runtime": "2.9.2",
     "@tanstack/react-router": "1.170.44",
-    "@tanstack/react-start": "1.169.1",
+    "@tanstack/react-start": "1.169.5",
     "lucide-react": "^1.73.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
