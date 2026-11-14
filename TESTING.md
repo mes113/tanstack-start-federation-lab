@@ -193,18 +193,18 @@ when `LAB_TEST_MODE=1`; normal dev does not expose the test metrics endpoint.
 ## Recorded verification and tooling
 
 Validated on 2026-11-14 with Node 24.22.1, Rstest / `@rstest/playwright` 0.12.6,
-Playwright 1.63.0 and Rslint 0.10.1:
+Playwright 1.63.0, Rslint 0.10.1 and the published `@module-federation/tanstack` 0.2.0:
 
 | Command             | Result                                                                |
 | ------------------- | --------------------------------------------------------------------- |
-| `npm test`          | 3 files, 36 passed, 0 skipped; about 113 seconds including app builds |
-| `npm run test:dev`  | 3 files, 35 passed, 1 intentional deployment skip; about 105 seconds  |
+| `npm test`          | 3 files, 36 passed, 0 skipped; about 106 seconds including app builds |
+| `npm run test:dev`  | 3 files, 35 passed, 1 intentional deployment skip; about 99 seconds   |
 | `npm run lint`      | Passed                                                                |
 | `npm run typecheck` | Passed for all four apps and the shared session package               |
 
-The latest full production load sample had p50 89.4 ms, p95 122.8 ms and about 2.1 MiB
-post-GC heap growth over 200 logical SSR requests. The dev sample had p50 146.4 ms,
-p95 366.5 ms and 0.0 MiB positive post-GC heap growth. These are local observations under
+The latest full production load sample had p50 81.6 ms, p95 120.1 ms and about 2.3 MiB
+post-GC heap growth over 200 logical SSR requests. The dev sample had p50 173.8 ms,
+p95 420.8 ms and 0.0 MiB positive post-GC heap growth. These are local observations under
 different app modes, not a performance comparison or portable benchmark.
 
 The three discovered files are `tests/unit.test.ts` (24 cases),
