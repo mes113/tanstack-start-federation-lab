@@ -69,7 +69,7 @@ For unit coverage, run `npm run test:coverage`, open `coverage/index.html`, or r
 running servers. PRs have a separate Coverage check, an automatically updated comment
 and a downloadable HTML/LCOV report; see [coverage scope and thresholds](../TESTING.md#unit-coverage-in-pull-requests).
 `npm run test:components` runs the actual catalog UI with Testing Library in
-Rstest's happy-dom environment. The coverage command combines this project with
+Rstest's jsdom environment. The coverage command combines this project with
 Node logic tests. Only the catalog RPC boundary is replaced in component tests;
 native federation and browser suites exercise real containers and transport.
 

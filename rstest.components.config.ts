@@ -14,7 +14,7 @@ export default defineConfig({
       ),
     },
   },
-  testEnvironment: "happy-dom",
+  testEnvironment: "jsdom",
   include: ["tests/components/**/*.test.tsx"],
   setupFiles: ["tests/components/setup.ts"],
 });

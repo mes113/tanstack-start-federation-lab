@@ -332,7 +332,7 @@ before bot comments gain this section; PR Checks show it immediately. Both base
 and head tests run in the read-only CI job. The posting job continues to execute
 only default-branch code, validating numeric totals and commit IDs from artifacts.
 
-The coverage command has separate Node logic and happy-dom React projects.
+The coverage command has separate Node logic and jsdom React projects.
 `npm run test:components` runs the latter alone: SSR rows are reused without an
 extra fetch; status filtering resets pagination; failed refreshes can be retried;
 an older slow search cannot overwrite the newest result. Testing Library drives
