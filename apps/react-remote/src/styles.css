@@ -62,7 +62,7 @@
   color: #9f93a9;
   margin-top: 22px;
 }
-.warehouse-panel button {
+.warehouse-panel button:not([data-slot="checkbox"]) {
   background: #faf8fd;
   border: 1px solid #e5deed;
   border-radius: 6px;

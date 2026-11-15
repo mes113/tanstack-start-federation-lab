@@ -1,3 +1,4 @@
+import { Button } from "@lab/ui/button";
 import {
   createContext,
   useContext,
@@ -74,14 +75,15 @@ export function HandbookShell({ children }: { children: ReactNode }) {
           Handbook <span>/</span> {active?.[1] ?? "Example"}
         </span>
         <div className="handbook-actions">
-          <button
+          <Button
+            variant="outline"
             disabled={!ready}
             aria-pressed={boundaries}
             onClick={() => setBoundaries(!boundaries)}
           >
             <Scan size={15} />
             {boundaries ? "Hide app boundaries" : "Show app boundaries"}
-          </button>
+          </Button>
           <a
             href="https://github.com/mes113/tanstack-start-federation-lab"
             target="_blank"
@@ -89,7 +91,8 @@ export function HandbookShell({ children }: { children: ReactNode }) {
           >
             GitHub <ArrowUpRight size={13} />
           </a>
-          <button
+          <Button
+            variant="outline"
             className="handbook-menu-button"
             aria-label={menu ? "Close topics" : "Open topics"}
             aria-expanded={menu}
@@ -97,7 +100,7 @@ export function HandbookShell({ children }: { children: ReactNode }) {
             onClick={() => setMenu(!menu)}
           >
             {menu ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          </Button>
         </div>
       </header>
       <div className="handbook-layout">

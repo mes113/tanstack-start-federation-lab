@@ -1,3 +1,5 @@
+import { Input } from "@lab/ui/input";
+import { Button } from "@lab/ui/button";
 import { useState } from "react";
 import { listProducts } from "../server-functions";
 import WorkspacePanel from "./WorkspacePanel";
@@ -49,23 +51,31 @@ function OrdersPanelView({ initialData, initialError }: OrdersPanelProps) {
         An independent backend, loaded on the host during SSR.
       </p>
       <div className="lab-actions">
-        <input
+        <Input
           aria-label="Find customer"
           placeholder="Find a customer…"
           value={customer}
           onChange={(e) => setCustomer(e.target.value)}
         />
-        <button disabled={pending} onClick={() => void load()}>
+        <Button
+          variant="outline"
+          disabled={pending}
+          onClick={() => void load()}
+        >
           Refresh orders
-        </button>
+        </Button>
       </div>
       {error ? (
         <div className="lab-error" role="alert" data-testid="orders-error">
           <strong>Orders temporarily unavailable</strong>
           <p>{error}</p>
-          <button disabled={pending} onClick={() => void load()}>
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={() => void load()}
+          >
             Retry orders
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="orders-list">
@@ -93,12 +103,20 @@ function OrdersPanelView({ initialData, initialError }: OrdersPanelProps) {
             : "No backend response"}
         </code>
         <div className="lab-actions">
-          <button disabled={pending} onClick={() => void load(true)}>
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={() => void load(true)}
+          >
             Simulate orders error
-          </button>
-          <button disabled={pending} onClick={() => void load(false, 2200)}>
+          </Button>
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={() => void load(false, 2200)}
+          >
             Simulate orders timeout
-          </button>
+          </Button>
         </div>
       </details>
     </section>

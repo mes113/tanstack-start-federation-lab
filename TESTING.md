@@ -36,7 +36,7 @@ npm run format:check
 
 For the original catalog and multi-remote regression groups only, use `npm run test:multi`
 or `npm run test:multi:dev`. Use `npm run test:advanced` for the ten advanced/handbook
-E2E cases and `npm run test:unit` for the 24 focused checks.
+E2E cases and `npm run test:unit` for focused domain and environment checks.
 All four application ports and test proxy port 3016 must be free. Rstest owns its processes, deliberately stops
 remotes, restarts the host in one scenario, and cleans up afterward.
 
@@ -207,13 +207,14 @@ post-GC heap growth over 200 logical SSR requests. The dev sample had p50 173.8 
 p95 420.8 ms and 0.0 MiB positive post-GC heap growth. These are local observations under
 different app modes, not a performance comparison or portable benchmark.
 
-The four discovered files are `tests/unit.test.ts` (24 cases),
+The default suite includes `tests/unit.test.ts` (24 cases), `tests/doctor.test.ts`
+(13 environment/preflight checks),
 `tests/legacy.test.ts` (2 cases covering the original catalog suite and all eleven
 multi-remote groups), `tests/advanced.test.ts` (10 cases), and
 `tests/coverage-comment.test.ts` (22 checks for report validation, fork PR discovery,
 comment updates, pagination and stale-run protection). Production discovers
-58 tests; dev runs 57 and explicitly skips the production-artifact deployment case.
-The coverage command runs the 46 unit and comment-publisher tests.
+71 tests; dev runs 70 and explicitly skips the production-artifact deployment case.
+The coverage command runs the 59 domain, doctor and comment-publisher tests.
 
 The guide also surfaced an early-interaction race in development: a remote button could
 be clicked before its federated handlers attached. Identity and workspace controls now stay

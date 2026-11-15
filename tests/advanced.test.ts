@@ -424,17 +424,27 @@ test("partial failures: missing chunks/CSS/SSR entry and interrupted backend str
     await expect(page.getByTestId("private-error")).toHaveCount(0);
   }
   const chunks = await browser.newContext();
+  let blockedWarehouseChunks = 0;
   try {
-    await chunks.route("http://127.0.0.1:3007/**", (route) =>
-      /\/async\/.*\.js/.test(route.request().url())
-        ? route.fulfill({ status: 404, body: "Intentional missing chunk" })
-        : route.continue(),
-    );
+    await chunks.route("http://127.0.0.1:3007/**", (route) => {
+      const path = new URL(route.request().url()).pathname;
+      // Dev and production emit different chunk directories. Keep the container
+      // reachable and fail its dependent JS, regardless of the chunk filename.
+      if (path.endsWith(".js") && !path.endsWith("/remoteEntry.js")) {
+        blockedWarehouseChunks++;
+        return route.fulfill({
+          status: 404,
+          body: "Intentional missing chunk",
+        });
+      }
+      return route.continue();
+    });
     const broken = await chunks.newPage();
     await broken.goto(`${base}/lab`);
     await expect(broken.getByTestId("error-warehouse")).toBeVisible({
       timeout: 20_000,
     });
+    expect(blockedWarehouseChunks).toBeGreaterThan(0);
     await expect(broken.getByTestId("order-row")).toHaveCount(3);
     await broken.screenshot({
       path: "test-results/missing-react-chunk.png",
@@ -756,11 +766,18 @@ test("handbook: topic navigation, keyboard views, ownership outlines and mobile 
     page.getByRole("navigation", { name: "Handbook topics" }),
   ).toBeVisible();
   await expect(page.getByTestId("product-row")).toHaveCount(8);
+  await expect(
+    page.getByRole("region", { name: "Guided experiment" }),
+  ).toContainText("Search for headphones");
+  await expect(page.getByTestId("catalog-observation")).toContainText(
+    "8 rows on this page",
+  );
   const marker = await page.evaluate(() => {
     document.documentElement.dataset.handbookDocument = "retained";
     return "retained";
   });
-  await page.getByRole("tab", { name: /^Code/ }).click();
+  await page.getByRole("button", { name: "See the code", exact: true }).click();
+  await expect(page.getByRole("tab", { name: /^Code/ })).toBeFocused();
   await expect(page.getByRole("tabpanel")).toContainText(
     "catalogRemote.load()",
   );

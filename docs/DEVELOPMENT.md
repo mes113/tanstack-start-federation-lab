@@ -11,6 +11,7 @@ repository root unless a workspace is specified.
 
 ```sh
 npm ci
+npm run doctor
 npm run build
 npm run dev
 ```
@@ -35,13 +36,27 @@ run separate workspace terminals instead.
 | `npm run typecheck`                             | Check all app workspaces and the shared session package.                                                         |
 | `npm run lint` / `npm run lint:fix`             | Check/fix supported Rslint rules.                                                                                |
 | `npm run format:check` / `npm run format`       | Check/write repository formatting.                                                                               |
-| `npm run test:unit`                             | Run 24 focused tests without starting apps.                                                                      |
+| `npm run test:unit`                             | Run domain and environment checks without starting apps.                                                         |
 | `npm test`                                      | Build and run all production Rstest tests.                                                                       |
 | `npm run test:dev`                              | Run the complete development suite, with the production deployment case skipped.                                 |
 | `npm run test:multi` / `npm run test:multi:dev` | Run original catalog and multi-remote regression groups.                                                         |
 | `npm run test:advanced`                         | Run session, mutation, failure, contract, load, deployment and handbook E2E checks against production artifacts. |
 
 Install the E2E browser once with `npx playwright install chromium`.
+
+`npm run doctor` checks Node, installed workspace dependencies, ports and build
+entry points. Modes: `--mode dev` (default), `build`, `preview`, `test` and
+`federation`. Test mode checks Chromium; federation checks ports 3404/3406.
+Preview requires existing production entries. Dev/test/federation can build their
+own artifacts, so missing entries are informational in those modes. Build mode
+needs the three temporary remote preview ports. The check does not stop any
+process and does not claim the backends are healthy. Startup performs a preflight
+before launching child processes; a port can still be taken after that check.
+
+Shared editable shadcn components live in `packages/ui` (`@lab/ui`). Keep this
+workspace React-only. All four apps consume it; the host and catalog's old UI
+paths re-export these primitives for compatibility. Theme scanning includes the
+package, and unit coverage includes its TSX files, even when untested.
 
 Run `npm run test:federation` for 16 native Node federation/SSR checks and
 `npm run typecheck:federation` for their component contracts. The test host loads

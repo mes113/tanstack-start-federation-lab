@@ -48,12 +48,19 @@ dts: {
               code={`git clone https://github.com/mes113/tanstack-start-federation-lab.git
 cd tanstack-start-federation-lab
 npm ci
+npm run doctor
 npm run build
 npm run dev`}
             />
             <p>
               Already in this repository? Start at <code>npm ci</code>. Dev
               starts the remotes before the host.
+            </p>
+            <p>
+              Something did not start? Run <code>npm run doctor</code> for
+              dependency, Node and port checks. For preview or tests, use{" "}
+              <code>npm run doctor -- --mode preview</code> or{" "}
+              <code>--mode test</code>.
             </p>
           </section>
           <section>

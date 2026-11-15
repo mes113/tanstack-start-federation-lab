@@ -1,3 +1,5 @@
+import { Button } from "@lab/ui/button";
+import { Checkbox } from "@lab/ui/checkbox";
 import { useState } from "react";
 import "./styles.css";
 
@@ -39,12 +41,11 @@ export default function WarehousePanel({
         "Schedule collection",
       ].map((task) => (
         <label key={task}>
-          <input
-            type="checkbox"
+          <Checkbox
             checked={checked.includes(task)}
-            onChange={(event) =>
+            onCheckedChange={(value) =>
               setChecked((old) =>
-                event.target.checked
+                value === true
                   ? [...old, task]
                   : old.filter((value) => value !== task),
               )
@@ -55,7 +56,9 @@ export default function WarehousePanel({
       ))}
       <details>
         <summary>Render fault check</summary>
-        <button onClick={() => setFailed(true)}>Simulate React crash</button>
+        <Button variant="outline" onClick={() => setFailed(true)}>
+          Simulate React crash
+        </Button>
       </details>
     </section>
   );

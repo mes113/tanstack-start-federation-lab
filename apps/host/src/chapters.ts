@@ -1,4 +1,21 @@
 export const catalogChapter = {
+  steps: [
+    {
+      action: "Read the initial catalog",
+      expect:
+        "Eight rows are supplied by the remote preload. Use Tests to verify the HTML without JavaScript.",
+    },
+    {
+      action: "Search for headphones",
+      expect:
+        "After the request completes, the remote returns matching rows and a new result count.",
+    },
+    {
+      action: "Change page or sort by Price",
+      expect:
+        "The catalog backend supplies the new result. Select a row to export just that row.",
+    },
+  ],
   number: "02 / DATA & SSR",
   title: "A remote that owns its data",
   description:
@@ -24,6 +41,22 @@ const initialData = await remote.default.preload();
   ],
 };
 export const resilienceChapter = {
+  steps: [
+    {
+      action: "Start with Healthy workspace",
+      expect: "Host, catalog, orders and the React checklist appear together.",
+    },
+    {
+      action: "Choose Backend exception",
+      expect:
+        "Orders shows its error screen. The catalog and checklist remain usable.",
+    },
+    {
+      action: "Choose Recover all modules",
+      expect:
+        "Orders loads again. Use Tests for restart and no-JavaScript checks.",
+    },
+  ],
   number: "04 / ERRORS & RECOVERY",
   title: "Compose it. Break it. Recover it.",
   description:
@@ -54,6 +87,22 @@ await Promise.all([
   ],
 };
 export const sessionChapter = {
+  steps: [
+    {
+      action: "Choose Alice and add a note",
+      expect: "The remote accepts the write and shows a successful response.",
+    },
+    {
+      action: "Choose Bob and try adding a note",
+      expect:
+        "Bob sees his own notes; the backend rejects the write with HTTP 403.",
+    },
+    {
+      action: "Sign out and refresh",
+      expect:
+        "The remote denies private data. Use the lesson menu for retries, races and navigation.",
+    },
+  ],
   number: "03 / SESSIONS & WRITES",
   title: "One session. Independent access decisions.",
   description:

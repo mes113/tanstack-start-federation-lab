@@ -1,3 +1,4 @@
+import { Button } from "@lab/ui/button";
 import { ChapterWorkbench } from "../components/ChapterWorkbench";
 import { BoundaryFrame } from "../components/HandbookShell";
 import { sessionChapter } from "../chapters";
@@ -87,13 +88,21 @@ function Scenarios() {
         </Link>
         <Link to="/">Product catalog</Link>
       </div>
-      <ChapterWorkbench {...sessionChapter}>
+      <ChapterWorkbench
+        {...sessionChapter}
+        observed={
+          data.initialData
+            ? `Orders accepted the session for ${data.initialData.actor.user} and returned ${data.initialData.total} private notes.`
+            : data.initialError || "No private data was received."
+        }
+      >
         <div className="learn-layout">
           <aside className="learn-sidebar">
             <span>FOUR SHORT LESSONS</span>
             <nav aria-label="Hands-on lessons">
               {lessons.map((item) => (
-                <button
+                <Button
+                  variant="outline"
                   key={item.id}
                   aria-pressed={lessonId === item.id}
                   onClick={() => setLessonId(item.id)}
@@ -101,7 +110,7 @@ function Scenarios() {
                   <small>{item.number}</small>
                   <strong>{item.short}</strong>
                   <ArrowRight size={13} />
-                </button>
+                </Button>
               ))}
             </nav>
             <div className="learn-sidebar-note">
@@ -152,7 +161,8 @@ function Scenarios() {
                   <span>Host · :3005</span>
                 </div>
                 <div className="identity-buttons">
-                  <button
+                  <Button
+                    variant="outline"
                     aria-label="Use Alice (admin)"
                     aria-pressed={data.actor?.user === "alice"}
                     disabled={!hydrated || switching}
@@ -163,8 +173,9 @@ function Scenarios() {
                       <strong>Use Alice (admin)</strong>
                       <small>Read, create and edit her own items</small>
                     </span>
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
                     aria-label="Use Bob (viewer)"
                     aria-pressed={data.actor?.user === "bob"}
                     disabled={!hydrated || switching}
@@ -175,7 +186,7 @@ function Scenarios() {
                       <strong>Use Bob (viewer)</strong>
                       <small>Read his own items; writes return 403</small>
                     </span>
-                  </button>
+                  </Button>
                 </div>
                 <div className="identity-current">
                   <span>
@@ -184,12 +195,13 @@ function Scenarios() {
                       {data.actor?.user ?? "guest"}
                     </strong>
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
                     disabled={!hydrated || switching}
                     onClick={() => void select("logout")}
                   >
                     Sign out
-                  </button>
+                  </Button>
                 </div>
                 <p className="identity-disclaimer">
                   These buttons issue local demo cookies. There is no external

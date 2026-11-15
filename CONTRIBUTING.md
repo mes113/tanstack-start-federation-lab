@@ -15,7 +15,7 @@ Read [SECURITY.md](SECURITY.md) before reporting vulnerabilities and follow the
 
 ## Make a change
 
-1. Install with `npm ci` and run the first `npm run build` before relying on generated remote types.
+1. Install with `npm ci`, run `npm run doctor`, then the first `npm run build` before relying on generated remote types.
 2. Make the change in the application that owns it. Keep remote server-function modules private; expose component modules and component-owned preloads.
 3. Update the relevant handbook excerpt, expected result and documentation when behavior changes. Ownership labels describe code ownership, not live service health.
 4. Rebuild declarations after changing a remote contract, then run typecheck and the relevant focused tests.

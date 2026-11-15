@@ -210,4 +210,10 @@ test.each([
     [expose],
   );
   expect(manifest.metaData.ssrRemoteEntry.name).toBe("remoteEntry.ssr.cjs");
+  expect(
+    [
+      ...manifest.exposes[0].assets.css.sync,
+      ...manifest.exposes[0].assets.css.async,
+    ].length,
+  ).toBeGreaterThan(0);
 });

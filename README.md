@@ -4,6 +4,7 @@
 [![Module Federation TanStack 0.2.0](https://img.shields.io/badge/Module_Federation_TanStack-0.2.0-blue)](https://www.npmjs.com/package/@module-federation/tanstack/v/0.2.0)
 [![Rsbuild 2.3.2](https://img.shields.io/badge/Rsbuild-2.3.2-ff6347)](https://www.npmjs.com/package/@rsbuild/core/v/2.3.2)
 [![Tests with Rstest](https://img.shields.io/badge/tested_with-Rstest-f7c94b)](TESTING.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 An interactive reference app for **TanStack Start + Module Federation + Rsbuild**:
 one host, two TanStack Start remotes, and one plain React remote.
@@ -31,6 +32,7 @@ Ports **3004–3007** must be available. The build downloads generated types fro
 git clone https://github.com/mes113/tanstack-start-federation-lab.git
 cd tanstack-start-federation-lab
 npm ci
+npm run doctor
 npm run build
 npm run dev
 ```
@@ -39,6 +41,19 @@ Open **[the handbook overview](http://127.0.0.1:3005/guide)**.
 The build prepares remote containers, generated route trees and type archives.
 Development starts the remotes before the host. Stop with Ctrl+C in the terminal
 that started the app. To preview built artifacts, stop dev and run `npm run preview`.
+
+If something does not start, run `npm run doctor`. It checks the supported Node
+version, installed dependencies/workspaces, ports and build entry points. Use
+`npm run doctor -- --mode preview`, `--mode test`, or `--mode federation` for the
+corresponding prerequisites; test mode also checks Chromium. Missing builds are
+informational in dev and an error for preview. Startup commands run these checks
+automatically and never terminate another process to free a port.
+
+The interactive chapters follow **action → expected result → observed response**.
+The page-loader snapshot and live remote response are labelled separately. Use
+**See the code** for the implementation or **Tests** for reproducible SSR checks.
+Buttons, inputs, tabs, selects and checkboxes use a shared React-only shadcn/ui
+workspace in [packages/ui](packages/ui); remotes do not import UI from the host.
 
 ![Federation Lab handbook](docs/images/guide.png)
 
@@ -130,6 +145,7 @@ and consumption). The [original prototype](https://github.com/mes113/module-fede
 illustrates the host registry problem and the remote transport approach.
 
 Upstream configuration/router notices are retained in [LICENSE.upstream](LICENSE.upstream).
+Original project code is licensed under [MIT](LICENSE).
 Editable shadcn/ui primitives retain [LICENSE.shadcn](LICENSE.shadcn). The catalog uses
 registry components; the handbook's [Code Block](https://ui.shadcn.com/docs/components/radix/code-block)
 uses Shiki with a synchronous JavaScript regex engine so highlighted text is in the SSR HTML.
