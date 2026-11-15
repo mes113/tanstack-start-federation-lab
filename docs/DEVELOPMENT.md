@@ -20,6 +20,9 @@ Build compiles all remotes, starts temporary remote previews, and builds the hos
 it downloads their generated declarations. It then stops those temporary previews.
 Dev starts the remotes, waits for their manifests, then starts host. Preview uses built
 artifacts. These modes share fixed ports and must run separately.
+Dev also requests each Start remote's standalone SSR page before declaring it
+ready. A manifest alone can be served while its backend is still compiling;
+the same readiness check applies after a test restarts a remote.
 
 Stop the orchestrator with Ctrl+C. It owns and cleans up the child processes it started;
 a remote exiting also ends the orchestrated session. For intentional manual outages,

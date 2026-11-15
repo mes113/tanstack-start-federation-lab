@@ -23,6 +23,10 @@ export async function startLab(command) {
     const child = start(app, command, env);
     remotes.set(app, child);
     await waitFor(`http://127.0.0.1:${apps[app]}/mf-manifest.json`, child);
+    // Dev can serve the manifest before Start's server bundle is compiled.
+    // Wait for an SSR page before sending RPCs through the host's timeout.
+    if (command === "dev" && app !== "react-remote")
+      await waitFor(`http://127.0.0.1:${apps[app]}/`, child);
   }
   await Promise.all(Object.keys(apps).map((app) => startRemote(app)));
   let host;
