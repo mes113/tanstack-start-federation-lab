@@ -1,9 +1,11 @@
 import { buildLab, startLab } from "./lab.mjs";
 import { cleanup } from "./processes.mjs";
+import { preflight } from "./doctor.mjs";
 const mode = process.argv[2] ?? "dev";
 for (const signal of ["SIGINT", "SIGTERM"])
   process.on(signal, () => void cleanup().then(() => process.exit(0)));
 try {
+  await preflight(mode);
   if (mode === "build") await buildLab();
   else {
     const lab = await startLab(mode === "dev" ? "dev" : "preview");
@@ -14,7 +16,7 @@ try {
     await lab.wait();
   }
 } catch (error) {
-  console.error(error);
+  console.error(error.name === "EnvironmentError" ? error.message : error);
   process.exitCode = 1;
 } finally {
   await cleanup();

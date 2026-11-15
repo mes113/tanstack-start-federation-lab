@@ -1,6 +1,7 @@
 {
   "name": "tanstack-federation-pr-lab",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "workspaces": [
     "apps/*",
@@ -10,6 +11,7 @@
     "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "scripts": {
+    "doctor": "node scripts/doctor.mjs",
     "dev": "node scripts/run.mjs dev",
     "build": "node scripts/run.mjs build",
     "preview": "node scripts/run.mjs preview",
@@ -17,7 +19,7 @@
     "typecheck:federation": "tsc --project tsconfig.federation.json",
     "test": "node scripts/test.mjs preview",
     "test:dev": "node scripts/test.mjs dev",
-    "test:unit": "rstest run tests/unit.test.ts",
+    "test:unit": "rstest run tests/unit.test.ts tests/doctor.test.ts",
     "test:federation": "rstest run --config rstest.federation.config.ts",
     "test:coverage": "rstest run --config rstest.coverage.config.ts",
     "coverage:summary": "node scripts/coverage-summary.mjs",

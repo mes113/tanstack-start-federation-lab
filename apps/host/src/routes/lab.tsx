@@ -1,3 +1,4 @@
+import { Button } from "@lab/ui/button";
 import { ChapterWorkbench } from "../components/ChapterWorkbench";
 import { BoundaryFrame } from "../components/HandbookShell";
 import { resilienceChapter } from "../chapters";
@@ -127,10 +128,15 @@ function HostPanel({
         host · PID {answer.pid} · {answer.time}
       </code>
       <div className="lab-actions">
-        <button onClick={() => void getHostSummary().then(setAnswer)}>
+        <Button
+          variant="outline"
+          onClick={() => void getHostSummary().then(setAnswer)}
+        >
           Refresh host
-        </button>
-        <button onClick={() => setFailed(true)}>Simulate host crash</button>
+        </Button>
+        <Button variant="outline" onClick={() => setFailed(true)}>
+          Simulate host crash
+        </Button>
       </div>
     </section>
   );
@@ -147,7 +153,10 @@ function Lab() {
         <a href="/">← Product catalog</a>
         <span>Composition sandbox</span>
       </div>
-      <ChapterWorkbench {...resilienceChapter}>
+      <ChapterWorkbench
+        {...resilienceChapter}
+        observed={`Catalog: ${data.catalog.data ? `${data.catalog.data.rows.length} rows received` : "no data"}. Orders: ${data.orders.data ? `${data.orders.data.rows.length} rows received` : "no data"}. React module: ${data.warehouse ? "loaded" : "unavailable"}. Check each panel below for rendering errors.`}
+      >
         <div className="fault-toolbar">
           <span className="learn-section-label">
             CHOOSE A FAILURE TO INVESTIGATE

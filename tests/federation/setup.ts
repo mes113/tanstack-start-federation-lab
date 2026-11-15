@@ -1,7 +1,9 @@
 import { cleanup, run, start, waitFor } from "../../scripts/processes.mjs";
+import { preflight } from "../../scripts/doctor.mjs";
 
 export async function setup() {
   try {
+    await preflight("federation");
     await Promise.all(
       ["remote", "orders", "react-remote"].map((app) => run(app, "build")),
     );

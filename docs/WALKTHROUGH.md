@@ -5,9 +5,18 @@
 Start the apps with the README's quickstart and open
 [Overview](http://127.0.0.1:3005/guide). Use the sidebar topics or mobile menu to navigate.
 Each topic pairs a question and expected result with Example, Code and Tests views.
+The guided experiment gives three actions with expected results. Its labelled
+page-loader snapshot is separate from the catalog's live result and the notes
+app's observed HTTP response. These displays describe received data; they do not
+automatically mark a scenario as passing. **See the code** opens the implementation
+and moves keyboard focus to the Code tab. Tabs keep the live example mounted.
 The Tests view contains terminal instructions; it does not execute tests in the browser.
 
 ## Getting started
+
+Run `npm run doctor` after `npm ci`. If preview or tests will not start, use
+`npm run doctor -- --mode preview` or `--mode test` for actionable prerequisite
+checks. Startup performs the same checks and never kills an existing process.
 
 Open [/getting-started](http://127.0.0.1:3005/getting-started) to connect the first build,
 remote manifest registration, component-owned preload and host forwarding. Follow the

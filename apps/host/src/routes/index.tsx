@@ -24,7 +24,16 @@ function Home() {
   const { initialData, available } = Route.useLoaderData();
   return (
     <main className="handbook-page" id="demo-content">
-      <ChapterWorkbench {...catalogChapter}>
+      <ChapterWorkbench
+        {...catalogChapter}
+        observed={
+          initialData
+            ? `${initialData.rows.length} rows received from catalog; ${initialData.rowCount} products match the initial query.`
+            : available
+              ? "Catalog loaded, but its backend returned no data. The error below is the observed result."
+              : "The catalog module could not be loaded. Start the remote and reload."
+        }
+      >
         <BoundaryFrame owner="Catalog">
           <RemoteBoundary name="Catalog">
             <Suspense

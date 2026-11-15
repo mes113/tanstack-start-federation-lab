@@ -1,12 +1,16 @@
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  include: ["tests/unit.test.ts", "tests/coverage-comment.test.ts"],
+  include: [
+    "tests/unit.test.ts",
+    "tests/coverage-comment.test.ts",
+    "tests/doctor.test.ts",
+  ],
   testEnvironment: "node",
   coverage: {
     enabled: true,
     provider: "istanbul",
-    include: ["apps/*/src/**/*.{ts,tsx}", "packages/*/**/*.{ts,mjs}"],
+    include: ["apps/*/src/**/*.{ts,tsx}", "packages/*/**/*.{ts,tsx,mjs}"],
     exclude: ["**/*.d.ts", "**/routeTree.gen.ts", "**/node_modules/**"],
     reporters: ["text", "html", "lcov", "json-summary"],
     reportsDirectory: "coverage",

@@ -1,3 +1,4 @@
+import { Button } from "@lab/ui/button";
 import { Component, type ReactNode } from "react";
 
 export function RemoteError({
@@ -21,7 +22,9 @@ export function RemoteError({
       <p>{message}</p>
       <p>Your other modules are still available.</p>
       {retry ? (
-        <button onClick={retry}>Retry {name.toLowerCase()} render</button>
+        <Button variant="outline" onClick={retry}>
+          Retry {name.toLowerCase()} render
+        </Button>
       ) : (
         <a href="/lab">Reload workspace</a>
       )}

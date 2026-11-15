@@ -1,3 +1,4 @@
+import { Button } from "@lab/ui/button";
 import { useState } from "react";
 import { ArrowRight, Boxes, Code2, Server, ShieldCheck } from "lucide-react";
 
@@ -11,15 +12,20 @@ export function ArchitectureMap() {
       <div className="architecture-heading">
         <span>ONE PAGE. FOUR APPLICATIONS.</span>
         <div aria-label="Request path">
-          <button aria-pressed={mode === "ssr"} onClick={() => setMode("ssr")}>
+          <Button
+            variant="outline"
+            aria-pressed={mode === "ssr"}
+            onClick={() => setMode("ssr")}
+          >
             Initial SSR
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             aria-pressed={mode === "browser"}
             onClick={() => setMode("browser")}
           >
             Browser action
-          </button>
+          </Button>
         </div>
       </div>
       <div className="architecture-flow">

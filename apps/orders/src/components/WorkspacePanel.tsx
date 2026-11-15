@@ -1,3 +1,5 @@
+import { Input } from "@lab/ui/input";
+import { Button } from "@lab/ui/button";
 import {
   FileText,
   Plus,
@@ -219,6 +221,23 @@ export default function WorkspacePanel({
         </span>
       </header>
       <p className="notes-experiment">{hints[lesson]}</p>
+      <section
+        className="notes-observation"
+        aria-label="Observed remote response"
+      >
+        <span>OBSERVED RESPONSE</span>
+        <div className="notes-response" aria-live="polite">
+          {pending
+            ? "Sending request…"
+            : lastResponse
+              ? lastResponse.status === null
+                ? "Last request failed · network error"
+                : `Last response · HTTP ${lastResponse.status}`
+              : initialData
+                ? "Loaded on the server · ready before JavaScript"
+                : "No private data loaded"}
+        </div>
+      </section>
       <form
         className="notes-compose"
         onSubmit={(event) => {
@@ -228,7 +247,7 @@ export default function WorkspacePanel({
       >
         <label htmlFor="note-title">Add a private note</label>
         <div>
-          <input
+          <Input
             id="note-title"
             disabled={!hydrated}
             aria-label="New note"
@@ -239,14 +258,15 @@ export default function WorkspacePanel({
               requestId.current = "";
             }}
           />
-          <button
+          <Button
+            variant="outline"
             className="notes-primary"
             disabled={!hydrated || pending}
             type="submit"
           >
             <Plus size={14} />
             Add note
-          </button>
+          </Button>
         </div>
         <small>
           {data?.actor.role === "viewer"
@@ -277,14 +297,18 @@ export default function WorkspacePanel({
         <strong>
           Your notes <span>{data?.total ?? 0}</span>
         </strong>
-        <button disabled={!hydrated} onClick={() => void refresh()}>
+        <Button
+          variant="outline"
+          disabled={!hydrated}
+          onClick={() => void refresh()}
+        >
           <RefreshCw size={13} />
           Refresh
-        </button>
+        </Button>
       </div>
       <div className="notes-search">
         <Search size={14} />
-        <input
+        <Input
           disabled={!hydrated}
           aria-label="Search notes"
           placeholder="Search your notes…"
@@ -297,7 +321,8 @@ export default function WorkspacePanel({
           }}
         />
         {query && (
-          <button
+          <Button
+            variant="outline"
             disabled={!hydrated}
             onClick={() => {
               setQuery("");
@@ -306,7 +331,7 @@ export default function WorkspacePanel({
             }}
           >
             Clear
-          </button>
+          </Button>
         )}
       </div>
       <ul className="notes-list">
@@ -329,7 +354,7 @@ export default function WorkspacePanel({
               >
                 <label className="workspace-field">
                   <span>New title</span>
-                  <input
+                  <Input
                     disabled={!hydrated}
                     aria-label="Edit note title"
                     placeholder={note.title}
@@ -342,13 +367,14 @@ export default function WorkspacePanel({
                     }
                   />
                 </label>
-                <button
+                <Button
+                  variant="outline"
                   className="notes-primary"
                   disabled={!hydrated || pending}
                   type="submit"
                 >
                   Save changes
-                </button>
+                </Button>
               </form>
               <small>
                 The saved version is checked by the remote. An outdated edit
@@ -378,7 +404,8 @@ export default function WorkspacePanel({
               ? "A saved note may no longer match this search."
               : "Go back to the first page to see your notes."}
           </p>
-          <button
+          <Button
+            variant="outline"
             disabled={!hydrated}
             onClick={() => {
               setQuery("");
@@ -387,7 +414,7 @@ export default function WorkspacePanel({
             }}
           >
             Show all notes
-          </button>
+          </Button>
         </div>
       ) : null}
       <details
@@ -402,12 +429,13 @@ export default function WorkspacePanel({
           Send the last add request again. The remote should return the same
           note, without adding another copy.
         </p>
-        <button
+        <Button
+          variant="outline"
           disabled={!hydrated || pending || !lastCreate.current}
           onClick={() => void create(true)}
         >
           Repeat last save
-        </button>
+        </Button>
         {!lastCreate.current && (
           <small>Add a note first to enable this test.</small>
         )}
@@ -421,7 +449,8 @@ export default function WorkspacePanel({
           Sorting & pages <ChevronRight size={13} />
         </summary>
         <div className="notes-browse">
-          <button
+          <Button
+            variant="outline"
             disabled={!hydrated}
             onClick={() => {
               const next = sort === "asc" ? "desc" : "asc";
@@ -431,11 +460,12 @@ export default function WorkspacePanel({
             }}
           >
             Reverse sort
-          </button>
+          </Button>
           <span>
             {sort === "asc" ? "A → Z" : "Z → A"} · Page {page + 1}
           </span>
-          <button
+          <Button
+            variant="outline"
             disabled={!hydrated}
             onClick={() => {
               const next = page + 1;
@@ -444,20 +474,9 @@ export default function WorkspacePanel({
             }}
           >
             Next page
-          </button>
+          </Button>
         </div>
       </details>
-      <div className="notes-response" aria-live="polite">
-        {pending
-          ? "Sending request…"
-          : lastResponse
-            ? lastResponse.status === null
-              ? "Last request failed · network error"
-              : `Last response · HTTP ${lastResponse.status}`
-            : initialData
-              ? "Loaded on the server · ready before JavaScript"
-              : "No private data loaded"}
-      </div>
       <details className="notes-debug">
         <summary>
           Developer details <ChevronRight size={13} />

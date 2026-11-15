@@ -117,6 +117,17 @@ after restoration. It does not demonstrate automatic adoption of a breaking cont
 
 ## Handbook ownership
 
+`packages/ui` is the shared React-only workspace for editable shadcn/ui primitives.
+Every application imports `@lab/ui`; no remote depends on the host's component
+source. Existing host/catalog UI paths re-export the shared primitives. Styling
+is compiled from the common theme, which scans this workspace and all four apps.
+The plain React remote remains independent of TanStack Start at runtime.
+
+The chapter guide separates instructions and expected behavior from observed
+page-loader data. Catalog and notes render their own live result summaries.
+Shadcn Tabs keep inactive examples mounted; switching to Code does not reset the
+remote's filters or notes. Observations do not replace automated SSR assertions.
+
 The host owns the navigation, chapter framing, Example / Code / Tests panels and code
 examples. Catalog owns the table; orders owns its panels and notes; warehouse owns its
 checklist. [HandbookShell](../apps/host/src/components/HandbookShell.tsx) and

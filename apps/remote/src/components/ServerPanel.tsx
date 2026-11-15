@@ -365,6 +365,24 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
         ))}
       </div>
       <div className="catalog-table-card">
+        <div
+          className="catalog-observation"
+          role="status"
+          aria-live="polite"
+          data-testid="catalog-observation"
+        >
+          <span>REMOTE RESULT</span>
+          <p>
+            {loading || search !== debouncedSearch
+              ? "Updating the catalog…"
+              : error
+                ? "Request failed. Use Try again below to retry."
+                : `${data?.rows.length ?? 0} rows on this page · ${data?.rowCount ?? 0} matching products`}
+          </p>
+          <small>
+            Search, filters and pages are processed by the catalog backend.
+          </small>
+        </div>
         <div className="table-card-heading">
           <div>
             <h2>
