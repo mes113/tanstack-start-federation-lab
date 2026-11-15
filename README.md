@@ -17,6 +17,10 @@ Every PR includes a **Coverage** check and an automatically updated comment with
 coverage percentages, plus a downloadable HTML/LCOV report. Run `npm run test:coverage` locally;
 see [coverage scope and thresholds](TESTING.md#unit-coverage-in-pull-requests).
 
+`npm run test:federation` tests real Node containers with `@module-federation/rstest`:
+remote imports, component-owned server-function preloads, SSR, sessions and failure handling.
+See [native federation tests](TESTING.md#native-federation-and-node-ssr-tests).
+
 ## Run locally
 
 Use a Node.js version supported by [package.json](package.json): Node 22 (22.18+), Node 24 (24.11+),
