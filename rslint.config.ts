@@ -11,6 +11,7 @@ export default defineConfig([
       ".rstest/**",
       "test-results/**",
       "coverage/**",
+      "coverage-base/**",
     ],
   },
   js.configs.recommended,

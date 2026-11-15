@@ -1,5 +1,6 @@
 import { Input } from "@lab/ui/input";
 import { Button } from "@lab/ui/button";
+import { RequestTrace } from "@lab/ui/request-trace";
 import {
   FileText,
   Plus,
@@ -56,6 +57,7 @@ export default function WorkspacePanel({
       origin: string;
       status: number | null;
       duration: number;
+      requestId?: string;
     }[]
   >([]);
   const httpSequence = useRef(0);
@@ -78,7 +80,7 @@ export default function WorkspacePanel({
         window.location.href,
       );
       const start = performance.now();
-      const record = (status: number | null) =>
+      const record = (status: number | null, requestId?: string) =>
         setActivity((previous) =>
           [
             {
@@ -89,13 +91,17 @@ export default function WorkspacePanel({
               origin: url.host,
               status,
               duration: Math.round(performance.now() - start),
+              requestId,
             },
             ...previous,
           ].slice(0, 3),
         );
       try {
         const response = await globalThis.fetch(input, init);
-        record(response.status);
+        record(
+          response.status,
+          response.headers.get("x-lab-request-id") ?? undefined,
+        );
         return response;
       } catch (cause) {
         record(null);
@@ -221,6 +227,25 @@ export default function WorkspacePanel({
         </span>
       </header>
       <p className="notes-experiment">{hints[lesson]}</p>
+      <RequestTrace
+        app="orders"
+        observation={
+          lastResponse
+            ? {
+                source: "browser",
+                requestId: lastResponse.requestId,
+                status: lastResponse.status,
+                durationMs: lastResponse.duration,
+                viaHost: !!lastResponse.requestId,
+              }
+            : {
+                source: "ssr",
+                requestId: initialData?.requestId,
+                backendMs: initialData?.durationMs,
+                viaHost: initialData?.viaHost,
+              }
+        }
+      />
       <section
         className="notes-observation"
         aria-label="Observed remote response"

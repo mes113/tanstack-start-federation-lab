@@ -40,6 +40,13 @@ Expect each data operation to run on the catalog backend, with browser RPCs sent
 The automated suite verifies the initial HTML and actual visibility without JavaScript.
 Switching to Code and back preserves the mounted table and its state.
 
+Expand **SSR preload · catalog backend** above the table. Its request ID matches
+the host document response's `x-lab-request-id` header in browser DevTools.
+Click **Refresh products**: the panel changes to **Browser request**, with a new
+ID matching the namespaced RPC response. The same ID travels to the backend.
+SSR timing measures the backend handler; browser timing measures the round trip.
+The displayed path explains ownership and does not prove every hop succeeded.
+
 ## Sessions & writes
 
 Open [private notes](http://127.0.0.1:3005/scenarios). Select a lesson, then choose an
@@ -59,6 +66,8 @@ Alice and Bob are local fixtures; choosing them does not contact an identity pro
 Sorting & pages reveals additional controls for the race experiment. Developer details
 contains applied query state, backend identity and actual HTTP history. The latest-response
 summary reports transport status; it does not replace the application error message.
+The orders request trace also connects the latest browser response to its host
+correlation ID. A signed-in page reload shows the initial SSR read's ID instead.
 
 A renamed or newly added note may not match the active search. An empty filtered view
 explains this and offers **Show all notes**. Clear also removes the search. Sign out clears

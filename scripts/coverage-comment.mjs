@@ -1,10 +1,17 @@
 import { readFile, stat } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { comparisonMarkdown } from "./coverage-compare.mjs";
 
 export const marker = "<!-- federation-lab-unit-coverage -->";
 const metrics = ["lines", "statements", "functions", "branches"];
 
-export function formatCoverageComment(report, run, repository) {
+export function formatCoverageComment(
+  report,
+  run,
+  repository,
+  comparison = null,
+) {
   if (
     !/^[\w.-]+\/[\w.-]+$/.test(repository) ||
     !/^[a-f0-9]{40}$/.test(run.head_sha) ||
@@ -55,13 +62,20 @@ export function formatCoverageComment(report, run, repository) {
           ...rows,
         ]),
     "",
+    comparisonMarkdown(comparison),
+    "",
     "Unit coverage includes untested app and shared-package files, including vendored UI. Browser E2E and separate SSR/backend processes are not measured here.",
     "",
     "This comment is updated after each completed PR CI run. Download **unit-coverage** from the linked run for uncovered lines. Coverage is not a guarantee of correctness.",
   ].join("\n");
 }
 
-export async function publishCoverageComment({ event, report, request }) {
+export async function publishCoverageComment({
+  event,
+  report,
+  request,
+  comparison = null,
+}) {
   const repository = event.repository.full_name;
   const run = await request(
     "GET",
@@ -75,7 +89,7 @@ export async function publishCoverageComment({ event, report, request }) {
   )
     return "Skipped unrelated workflow";
   // PR identity always comes from GitHub, never from the downloaded artifact.
-  const body = formatCoverageComment(report, run, repository);
+  formatCoverageComment(report, run, repository);
   const candidates = await request(
     "GET",
     `/repos/${repository}/commits/${run.head_sha}/pulls?per_page=100`,
@@ -91,6 +105,14 @@ export async function publishCoverageComment({ event, report, request }) {
       value.head.ref === run.head_branch &&
       value.head.repo?.id === run.head_repository.id;
     if (!current(pr)) continue;
+    const body = formatCoverageComment(
+      report,
+      run,
+      repository,
+      report !== null && comparison?.baseSha === pr.base.sha
+        ? comparison
+        : null,
+    );
     let previous;
     for (let page = 1; !previous; page++) {
       const comments = await request(
@@ -129,11 +151,25 @@ async function main() {
     await readFile(process.env.GITHUB_EVENT_PATH, "utf8"),
   );
   let report = null;
+  let comparison = null;
   try {
     const info = await stat(process.env.COVERAGE_REPORT);
     if (!info.isFile() || info.size > 256_000)
       throw new Error("Invalid coverage report size");
     report = JSON.parse(await readFile(process.env.COVERAGE_REPORT, "utf8"));
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  const comparisonPath = join(
+    dirname(process.env.COVERAGE_REPORT),
+    "comparison.json",
+  );
+  try {
+    const info = await stat(comparisonPath);
+    if (!info.isFile() || info.size > 256_000)
+      throw new Error("Invalid comparison report size");
+    comparison = JSON.parse(await readFile(comparisonPath, "utf8"));
+    comparisonMarkdown(comparison);
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
   }
@@ -152,7 +188,9 @@ async function main() {
       throw new Error(`GitHub API ${method} failed: ${response.status}`);
     return response.json();
   };
-  console.log(await publishCoverageComment({ event, report, request }));
+  console.log(
+    await publishCoverageComment({ event, report, request, comparison }),
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)

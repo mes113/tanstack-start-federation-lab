@@ -111,12 +111,15 @@ npm run lint
 npm run format:check
 ```
 
-The latest complete verification on 2026-11-14 passed **36 production tests** and
-**35 development tests with one intentional deployment skip**. Type checking, Rslint
-and formatting also passed. These are recorded local results, not live CI status.
+CI verifies production and development behavior, native Node federation/SSR,
+type checking, Rslint, formatting, and unit/component coverage. Follow the CI badge
+for the current result; local verification commands are listed above.
 
 Focused commands: `npm run test:unit`, `npm run test:multi`,
 `npm run test:multi:dev`, and `npm run test:advanced`.
+Use `npm run test:components` for React behavior tests without starting servers.
+PR coverage reports compare the tested tree with the exact base commit and show
+coverage of changed executable source lines.
 [TESTING.md](TESTING.md) explains coverage, assertions, artifacts and limitations.
 
 ## Documentation

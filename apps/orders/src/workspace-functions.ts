@@ -27,6 +27,7 @@ export const loadWorkspace = createServerFn({ method: "POST" })
     const { getCookie, getRequestHeader, setResponseStatus } =
       await import("@tanstack/react-start/server");
     const { verifySession, sessionCookie } = await import("@lab/session");
+    const started = performance.now();
     const actor = verifySession(getCookie(sessionCookie));
     if (!actor) {
       setResponseStatus(401);
@@ -41,6 +42,9 @@ export const loadWorkspace = createServerFn({ method: "POST" })
       page: data.page,
       sort: data.sort,
       app: "orders" as const,
+      viaHost: !!getRequestHeader("x-lab-request-id"),
+      durationMs: Math.round(performance.now() - started),
+      requestId: getRequestHeader("x-lab-request-id") ?? crypto.randomUUID(),
       pid: process.pid,
       receivedAuthorization: !!getRequestHeader("authorization"),
       receivedUnrelatedCookie: (getRequestHeader("cookie") ?? "").includes(

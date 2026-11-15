@@ -24,7 +24,7 @@ const run = {
 const pr = {
   number: 13,
   state: "open",
-  base: { repo: { id: 1 } },
+  base: { repo: { id: 1 }, sha: "b".repeat(40) },
   head: { sha: run.head_sha, ref: "feature", repo: { id: 2 } },
 };
 const metric = { total: 10, covered: 8, pct: 80 };
@@ -64,6 +64,26 @@ function writes(request: ReturnType<typeof client>) {
 }
 
 describe("coverage PR comment", () => {
+  test("only publishes comparison for the current base commit from GitHub", async () => {
+    const comparison = {
+      baseSha: pr.base.sha,
+      testedSha: run.head_sha,
+      head: report.total,
+      base: report.total,
+      changed: { covered: 3, total: 4, unmeasuredFiles: 0 },
+    };
+    const request = client();
+    await publishCoverageComment({ event, report, request, comparison });
+    expect(JSON.stringify(writes(request))).toContain("75.00%");
+    const stale = client();
+    await publishCoverageComment({
+      event,
+      report,
+      request: stale,
+      comparison: { ...comparison, baseSha: "c".repeat(40) },
+    });
+    expect(JSON.stringify(writes(stale))).not.toContain("75.00%");
+  });
   test("formats percentages, counts, commit and canonical report link", () => {
     const body = formatCoverageComment(report, run, "owner/lab");
     expect(body).toContain("| Lines | **80%** | 8 / 10 |");

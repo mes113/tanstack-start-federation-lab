@@ -38,6 +38,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
@@ -45,6 +46,27 @@ jobs:
       - run: npm ci
       - name: Unit coverage and thresholds
         run: npm run test:coverage
+      - name: Check out exact PR base for comparison
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: coverage-base
+          persist-credentials: false
+      - name: Measure base coverage with its own lockfile and configuration
+        id: baseline
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        working-directory: coverage-base
+        run: |
+          npm ci
+          npm run test:coverage
+      - name: Compare coverage and changed executable lines
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && hashFiles('coverage/coverage-summary.json') != '' }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASELINE_VALID: ${{ steps.baseline.outcome == 'success' }}
+        run: node scripts/coverage-compare.mjs
       - name: Publish coverage summary
         if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
         run: npm run coverage:summary

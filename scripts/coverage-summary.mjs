@@ -1,5 +1,12 @@
 import { appendFile, readFile } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
+import { comparisonMarkdown } from "./coverage-compare.mjs";
+let comparison = null;
+try {
+  comparison = JSON.parse(await readFile("coverage/comparison.json", "utf8"));
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
 
 const report = JSON.parse(
   await readFile("coverage/coverage-summary.json", "utf8"),
@@ -30,6 +37,8 @@ const summary = [
   "| Scope | Lines | Statements | Functions | Branches |",
   "| --- | --- | --- | --- | --- |",
   `| **All source** | ${cells(report.total).join(" | ")} |`,
+  "",
+  comparisonMarkdown(comparison),
   "",
   "Minimum coverage is enforced for session handling, workspace mutations and the runtime contract guard. See `rstest.coverage.config.ts` for thresholds.",
   "",

@@ -8,3 +8,4 @@ test-results
 .rstack-reference
 .rstest
 coverage
+coverage-base
