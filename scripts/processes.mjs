@@ -4,13 +4,14 @@ import { resolve } from "node:path";
 
 const cli = resolve("node_modules/@rsbuild/core/bin/rsbuild.js");
 const children = new Set();
-export function start(app, command, env = {}) {
+export function start(app, command, env = {}, args = []) {
   const child = spawn(
     process.execPath,
     [
       ...(process.env.LAB_TEST_MODE === "1" ? ["--expose-gc"] : []),
       cli,
       command,
+      ...args,
     ],
     {
       cwd: resolve("apps", app),

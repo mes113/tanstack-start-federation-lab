@@ -6,6 +6,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   }),
   include: ["tests/**/*.test.ts"],
+  exclude: ["tests/federation/**"],
   testEnvironment: "node",
   pool: { maxWorkers: 1 },
   testTimeout: 180_000,

@@ -242,6 +242,62 @@ The shared React version is deliberately identical across all four applications.
 
 ## GitHub Actions for external contributions
 
+### Native federation and Node SSR tests
+
+```sh
+npm run test:federation
+npm run typecheck:federation
+```
+
+The dedicated [Rstest configuration](rstest.federation.config.ts) uses the official
+`@module-federation/rstest` plugin. Its global setup builds the three real remotes,
+then starts catalog and orders production backends on **3404** and **3406**. Node
+tests dynamically import `catalog/ServerPanel`, `orders/OrdersPanel` and
+`warehouse/WarehousePanel` from their built `remoteEntry.ssr.cjs` containers.
+The browser host and Chromium are not needed; teardown stops the fixture processes.
+
+These 16 checks cover:
+
+- Repeated remote imports preserve component identity.
+- One Node React renderer renders all three remotes with working hooks.
+- Catalog and orders components call their own private server functions through
+  `preload`; returned backend data appears in the rendered HTML.
+- Concurrent preloads reach independent catalog/orders processes.
+- Anonymous requests cannot read the private workspace; Alice and Bob see only
+  their own notes, including across ten concurrent SSR request contexts.
+- The host forwards the session cookie while dropping unrelated cookies and
+  authorization headers.
+- Backend failures reject preload, SSR error states render, subsequent requests
+  recover, and the plain React render-fault fixture throws to its caller.
+- A private server-function module cannot be imported through federation; all
+  three manifests expose only their public UI component.
+
+The test host reuses `@module-federation/tanstack/node-entry-loader` to register
+the native Node React instance as shared. Both ReactDOM's server renderer and
+the remote hooks must use that instance; bundling a fallback React in the test
+host can otherwise create a second dispatcher. Dynamic imports let the containers
+initialize before use. The plugin enables Rstest's Node federation compatibility
+mode automatically; there is no redundant `federation: true` switch.
+
+Preloads run inside `runWithStartContext` with an explicit request fixture and
+the same allowlisted-cookie transport as the app host. No remote module or data
+RPC is mocked. Server-function modules remain private imports owned by remote UI.
+The `remotes.d.ts` declarations provide type-only component contracts from source;
+they do not alias runtime imports. Published declaration consumption remains
+covered by the app build/typecheck and browser integration suite.
+
+Run this suite separately from other production builds/deployment tests, which
+rewrite the same `dist` directories. It uses separate ports from the local demo.
+The regular `npm test` / `npm run test:dev` configurations exclude these files
+so they are always run through the federation-enabled test host. CI requires the
+separate **Federation (Node SSR)** job in addition to the browser integration jobs.
+
+This suite does not add browser/SSR execution to the unit coverage percentage:
+it consumes independently compiled production artifacts. See the unit report's
+scope below. For API details, see the official
+[Rstest guide](https://rstest.rs/guide/advanced/module-federation) and
+[Module Federation integration](https://module-federation.io/integrations/build-tool/rstest.html).
+
 ### Unit coverage in pull requests
 
 Run `npm run test:coverage` locally. This uses the dedicated
@@ -297,7 +353,8 @@ for running fork PR tests remains in effect.
 
 [CI](.github/workflows/ci.yml) runs on pull requests and pushes to main. It uses
 GitHub-hosted Ubuntu 24.04 runners and Node 24. Quality checks lint and formatting;
-separate production/development matrix jobs install Chromium, run the complete suites
+the Federation job loads real Node containers and typechecks its test contracts;
+separate production/development matrix jobs install Chromium, run the browser suites
 and typecheck the generated contracts. The final CI job requires every prerequisite
 to succeed and is the required branch check. No path filters skip documentation PRs.
 

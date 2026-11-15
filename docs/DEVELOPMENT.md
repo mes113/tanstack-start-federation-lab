@@ -43,6 +43,12 @@ run separate workspace terminals instead.
 
 Install the E2E browser once with `npx playwright install chromium`.
 
+Run `npm run test:federation` for 16 native Node federation/SSR checks and
+`npm run typecheck:federation` for their component contracts. The test host loads
+real remote containers and calls component-owned preloads against production
+backends on ports 3404/3406, without Chromium or the browser host. See
+[fixture lifecycle and coverage boundaries](../TESTING.md#native-federation-and-node-ssr-tests).
+
 For unit coverage, run `npm run test:coverage`, open `coverage/index.html`, or run
 `npm run coverage:summary` for a Markdown table. This command needs no browser or
 running servers. PRs have a separate Coverage check, an automatically updated comment

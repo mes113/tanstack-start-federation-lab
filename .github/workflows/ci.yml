@@ -57,6 +57,22 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  federation:
+    name: Federation (Node SSR)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm run test:federation
+      - run: npm run typecheck:federation
+
   integration:
     name: Integration (${{ matrix.mode }})
     runs-on: ubuntu-24.04
@@ -98,7 +114,7 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [quality, coverage, integration]
+    needs: [quality, coverage, federation, integration]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
@@ -107,8 +123,10 @@ jobs:
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           COVERAGE_RESULT: ${{ needs.coverage.result }}
+          FEDERATION_RESULT: ${{ needs.federation.result }}
           INTEGRATION_RESULT: ${{ needs.integration.result }}
         run: |
           test "$QUALITY_RESULT" = success
           test "$COVERAGE_RESULT" = success
+          test "$FEDERATION_RESULT" = success
           test "$INTEGRATION_RESULT" = success

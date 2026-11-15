@@ -43,6 +43,11 @@ in an automatically updated bot comment, the Coverage check and the workflow sum
 with a downloadable HTML report.
 See [coverage scope and thresholds](TESTING.md#unit-coverage-in-pull-requests).
 
+For federation changes, also run `npm run test:federation` and
+`npm run typecheck:federation`. These load the real Node containers and exercise
+component-owned preloads, SSR and request/session isolation. CI requires the
+Federation (Node SSR) job alongside the existing unit and browser checks.
+
 The CI workflow runs lint/format checks, unit coverage thresholds, and both production and development Rstest suites
 on GitHub-hosted Linux runners. Each integration run generates remote declarations before
 type checking. Its final CI gate fails if a required job fails, is cancelled or is skipped.
