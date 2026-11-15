@@ -20,6 +20,9 @@ Build compiles all remotes, starts temporary remote previews, and builds the hos
 it downloads their generated declarations. It then stops those temporary previews.
 Dev starts the remotes, waits for their manifests, then starts host. Preview uses built
 artifacts. These modes share fixed ports and must run separately.
+Dev also requests each Start remote's standalone SSR page before declaring it
+ready. A manifest alone can be served while its backend is still compiling;
+the same readiness check applies after a test restarts a remote.
 
 Stop the orchestrator with Ctrl+C. It owns and cleans up the child processes it started;
 a remote exiting also ends the orchestrated session. For intentional manual outages,
@@ -68,6 +71,16 @@ For unit coverage, run `npm run test:coverage`, open `coverage/index.html`, or r
 `npm run coverage:summary` for a Markdown table. This command needs no browser or
 running servers. PRs have a separate Coverage check, an automatically updated comment
 and a downloadable HTML/LCOV report; see [coverage scope and thresholds](../TESTING.md#unit-coverage-in-pull-requests).
+`npm run test:components` runs the actual catalog UI with Testing Library in
+Rstest's jsdom environment. The coverage command combines this project with
+Node logic tests. Only the catalog RPC boundary is replaced in component tests;
+native federation and browser suites exercise real containers and transport.
+
+For a browser request, inspect `x-lab-request-id`, `x-lab-route`, and
+`Server-Timing` in DevTools and compare the ID with the expandable request trace.
+For SSR, compare the document response ID with the preload snapshot in the HTML.
+See [correlation semantics](ARCHITECTURE.md#request-correlation) before interpreting
+the durations or using diagnostic metadata in another application.
 Free application ports 3004–3007 and test proxy port 3016 before process-owned E2E runs.
 See [TESTING.md](../TESTING.md) for runner behavior and artifact locations.
 

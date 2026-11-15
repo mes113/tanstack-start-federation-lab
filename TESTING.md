@@ -303,7 +303,7 @@ scope below. For API details, see the official
 
 Run `npm run test:coverage` locally. This uses the dedicated
 [coverage configuration](rstest.coverage.config.ts) and the matching official
-`@rstest/coverage-istanbul` provider. It runs the unit suite without starting servers
+`@rstest/coverage-istanbul` provider. It runs the unit and component suites without starting servers
 or interrupting a running demo. `npm run coverage:summary` prints a Markdown report.
 
 Each completed PR CI run creates or updates one **Unit test coverage** bot comment
@@ -311,6 +311,40 @@ in the PR conversation. It shows all four percentages, covered/total counts, the
 tested commit and a link to the full report. If CI produced no report, the comment
 explicitly says coverage is unavailable instead of showing an earlier commit's numbers.
 Closed PRs and runs for an outdated head commit are skipped.
+
+The Coverage job checks out the **exact PR base SHA** in a separate directory and
+runs that commit's own coverage command with its own lockfile and configuration.
+It compares all four percentages in percentage points against the tested checkout
+(GitHub's PR merge tree), and intersects added/modified source lines with the
+head LCOV executable-line map. The summary includes both commit IDs. Denominators
+can change when source or test configuration changes; this is a comparison of
+each tree's reported coverage, not an identical-file-only metric.
+
+Changed-line coverage includes TS/TSX/MJS under `apps` and `packages`, excluding
+generated declarations and route trees. Non-executable lines do not count.
+Source files absent from the unit report are counted separately. A missing or
+failed baseline is labelled unavailable; no delta is fabricated. This comparison
+is informational and adds no global or changed-line percentage gate.
+
+The bot includes the comparison only while its base SHA still matches the PR's
+current base. The comparison publisher must be merged to the default branch
+before bot comments gain this section; PR Checks show it immediately. Both base
+and head tests run in the read-only CI job. The posting job continues to execute
+only default-branch code, validating numeric totals and commit IDs from artifacts.
+
+The coverage command has separate Node logic and jsdom React projects.
+`npm run test:components` runs the latter alone: SSR rows are reused without an
+extra fetch; status filtering resets pagination; failed refreshes can be retried;
+an older slow search cannot overwrite the newest result. Testing Library drives
+the real catalog component, table, and shared primitives. A narrowly scoped
+alias replaces only its RPC module with a typed Rstest mock, avoiding Start's
+build-only virtual modules. These tests do not claim to verify real RPC transport
+or CSS; native federation and browser suites cover those boundaries.
+
+Logic tests also cover catalog validation, backend filtering/sorting/pagination,
+aggregate statistics, request-context isolation and cleanup, and coverage diff
+parsing/validation. Browser integration checks correlate SSR and refreshed catalog
+IDs with actual response headers.
 
 Open **Checks → Coverage**, then the workflow run's summary, to see
 lines, statements, functions and branches, with a table for every file. Download

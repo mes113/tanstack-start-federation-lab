@@ -17,6 +17,10 @@ export const listProducts = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data }) => {
+    const started = performance.now();
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const requestId =
+      getRequestHeader("x-lab-request-id") ?? crypto.randomUUID();
     await new Promise((resolve) => setTimeout(resolve, data.delayMs));
     if (data.fail) throw new Error("Intentional orders backend failure");
     const { orders } = await import("./data");
@@ -28,6 +32,9 @@ export const listProducts = createServerFn({ method: "POST" })
         app: "orders" as const,
         pid: process.pid,
         time: new Date().toISOString(),
+        requestId,
+        viaHost: !!getRequestHeader("x-lab-request-id"),
+        durationMs: Math.round(performance.now() - started),
       },
     };
   });

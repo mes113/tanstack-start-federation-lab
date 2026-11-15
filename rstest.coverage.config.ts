@@ -1,12 +1,19 @@
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  include: [
-    "tests/unit.test.ts",
-    "tests/coverage-comment.test.ts",
-    "tests/doctor.test.ts",
+  projects: [
+    {
+      name: "logic",
+      testEnvironment: "node",
+      include: [
+        "tests/unit.test.ts",
+        "tests/coverage-comment.test.ts",
+        "tests/doctor.test.ts",
+        "tests/insights.test.ts",
+      ],
+    },
+    "./rstest.components.config.ts",
   ],
-  testEnvironment: "node",
   coverage: {
     enabled: true,
     provider: "istanbul",

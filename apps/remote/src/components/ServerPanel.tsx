@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { RequestTrace, type RequestObservation } from "@lab/ui/request-trace";
 import {
   flexRender,
   columnVisibilityFeature,
@@ -106,6 +107,12 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
       : "We couldn’t load your products. Check the catalog connection and try again.",
   );
   const [revision, setRevision] = useState(0);
+  const [observation, setObservation] = useState<RequestObservation>({
+    source: "ssr",
+    requestId: initialData?.server.requestId,
+    backendMs: initialData?.server.durationMs,
+    viaHost: initialData?.server.viaHost,
+  });
   const [selection, setSelection] = useState({});
   const lastLoaded = useRef(
     initialData ? JSON.stringify({ ...initialQuery, revision: 0 }) : "",
@@ -139,10 +146,40 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
     setLoading(true);
     setError("");
     setSelection({});
-    listProducts({ data: query })
+    listProducts({
+      data: query,
+      fetch: async (input, init) => {
+        const start = performance.now();
+        try {
+          const response = await globalThis.fetch(input, init);
+          if (current)
+            setObservation({
+              source: "browser",
+              requestId: response.headers.get("x-lab-request-id") ?? undefined,
+              status: response.status,
+              viaHost: response.headers.has("x-lab-request-id"),
+              durationMs: Math.round(performance.now() - start),
+            });
+          return response;
+        } catch (error) {
+          if (current)
+            setObservation({
+              source: "browser",
+              status: null,
+              durationMs: Math.round(performance.now() - start),
+            });
+          throw error;
+        }
+      },
+    })
       .then((result) => {
         if (current) {
           setData(result);
+          setObservation((value) => ({
+            ...value,
+            requestId: result.server.requestId,
+            viaHost: result.server.viaHost,
+          }));
           lastLoaded.current = key;
         }
       })
@@ -365,6 +402,7 @@ function ServerPanelView({ title, initialData }: ServerPanelProps) {
         ))}
       </div>
       <div className="catalog-table-card">
+        <RequestTrace app="catalog" observation={observation} />
         <div
           className="catalog-observation"
           role="status"

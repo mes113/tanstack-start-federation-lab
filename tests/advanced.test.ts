@@ -761,7 +761,7 @@ test("handbook: topic navigation, keyboard views, ownership outlines and mobile 
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(base);
+  const initialResponse = await page.goto(base);
   await expect(
     page.getByRole("navigation", { name: "Handbook topics" }),
   ).toBeVisible();
@@ -771,6 +771,24 @@ test("handbook: topic navigation, keyboard views, ownership outlines and mobile 
   ).toContainText("Search for headphones");
   await expect(page.getByTestId("catalog-observation")).toContainText(
     "8 rows on this page",
+  );
+  const initialRequestId = initialResponse?.headers()["x-lab-request-id"];
+  expect(initialRequestId).toMatch(/^[a-f0-9-]{36}$/);
+  await expect(page.getByTestId("trace-id-catalog")).toHaveText(
+    initialRequestId!,
+  );
+  const refreshResponse = page.waitForResponse((response) =>
+    response.url().includes("/_federation/catalog/_serverFn/"),
+  );
+  await page
+    .getByRole("button", { name: "Refresh products", exact: true })
+    .click();
+  const refreshed = await refreshResponse;
+  expect(refreshed.headers()["x-lab-route"]).toBe("catalog");
+  expect(refreshed.headers()["server-timing"]).toMatch(/^lab;dur=/);
+  expect(refreshed.headers()["x-lab-request-id"]).not.toBe(initialRequestId);
+  await expect(page.getByTestId("trace-id-catalog")).toHaveText(
+    refreshed.headers()["x-lab-request-id"]!,
   );
   const marker = await page.evaluate(() => {
     document.documentElement.dataset.handbookDocument = "retained";

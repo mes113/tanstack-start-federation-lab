@@ -47,6 +47,28 @@ Read [host forwarding](../apps/host/src/start.ts),
 [orders component exports](../apps/orders/src/components/OrdersPanel.tsx), and
 [private functions](../apps/orders/src/workspace-functions.ts).
 
+## Request correlation
+
+The host's first middleware creates a fresh UUID for each request and keeps its
+context in a request-keyed WeakMap. It ignores client-supplied IDs. Both remote
+transports forward this ID as `x-lab-request-id`; backend preload metadata returns
+it to the remote UI. The host also adds the ID, a fixed `x-lab-route` namespace,
+and `Server-Timing: lab;dur=...` to its response. Existing headers are preserved.
+Context is removed in `finally`; concurrent sessions do not share trace state.
+
+Catalog and private notes render an expandable request trace, including in SSR
+HTML. Initial timing is the backend handler duration. Later browser calls show
+HTTP status and browser round-trip duration. Host timing ends when middleware
+receives the response, before a streamed response body necessarily completes.
+These durations measure different intervals and should not be compared as equal.
+
+The path shows configured ownership, not distributed tracing spans or backend
+health. A transport failure can happen before the backend is reached, and Start
+can serialize application errors inside HTTP 200. Standalone backend requests
+generate their own IDs; `viaHost` is diagnostic metadata, never authorization.
+No payloads, cookie values, or query strings are included in trace IDs or headers.
+This is an in-page inspection aid, without persistent logs or a tracing service.
+
 ## SSR composition and recovery
 
 The host route loaders resolve remote modules and collect data before rendering.
