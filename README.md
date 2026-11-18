@@ -1,7 +1,7 @@
 # Federation Lab
 
 [![CI](https://github.com/mes113/tanstack-start-federation-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mes113/tanstack-start-federation-lab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Module Federation TanStack 0.2.0](https://img.shields.io/badge/Module_Federation_TanStack-0.2.0-blue)](https://www.npmjs.com/package/@module-federation/tanstack/v/0.2.0)
+[![Module Federation TanStack PR 25](https://img.shields.io/badge/Module_Federation_TanStack-PR_25_preview-blue)](https://github.com/module-federation/tanstack/pull/25)
 [![Rsbuild 2.3.2](https://img.shields.io/badge/Rsbuild-2.3.2-ff6347)](https://www.npmjs.com/package/@rsbuild/core/v/2.3.2)
 [![Tests with Rstest](https://img.shields.io/badge/tested_with-Rstest-f7c94b)](TESTING.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -139,8 +139,10 @@ memory and reset when orders restarts. The session cookie lasts ten minutes; onl
 allowlisted cookie is forwarded to orders. This reference does not implement a database,
 production identity provider, CDN deployment or transparent upgrades of cached containers.
 
-All four apps pin the published npm release [`@module-federation/tanstack@0.2.0`](https://www.npmjs.com/package/@module-federation/tanstack/v/0.2.0).
-The lockfile resolves the npm registry tarball, replacing the earlier PR preview package.
+This branch tests the [Module Federation PR #25 preview](https://github.com/module-federation/tanstack/pull/25)
+at commit `2765be7`. The host awaits `lazyRemote.preload()` in its route loaders so remote
+markup streams inline on the first SSR response and after remote recovery. See [TESTING.md](TESTING.md)
+for the regression checks. The existing release uses `@module-federation/tanstack@0.2.0`.
 The 0.2.0 release includes the changes exercised here: [PR #21](https://github.com/module-federation/tanstack/pull/21)
 (server-function transport, recovery and colliding IDs) and
 [PR #22](https://github.com/module-federation/tanstack/pull/22) (remote type publishing

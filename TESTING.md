@@ -192,6 +192,14 @@ when `LAB_TEST_MODE=1`; normal dev does not expose the test metrics endpoint.
 
 ## Recorded verification and tooling
 
+On the PR #25 preview branch, `npm run test:multi` and `npm run test:multi:dev`
+exercise five concurrent first SSR requests to a fresh host, then the first page
+request after each unavailable remote recovers. They check the raw HTML for
+hidden React streaming segments and verify remote content with JavaScript disabled.
+The same suite checks a browser call to a host-owned server function after federation
+initializes. This covers the Rsbuild path. The upstream Vite-only dev fix is outside
+the lab's test matrix.
+
 Validated on 2026-11-14 with Node 24.22.1, Rstest / `@rstest/playwright` 0.12.6,
 Playwright 1.65.1, Rslint 0.10.1 and the published `@module-federation/tanstack` 0.2.0:
 

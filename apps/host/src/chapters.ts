@@ -25,8 +25,8 @@ export const catalogChapter = {
     "Eight product rows are in the initial HTML. Search and pagination then call the catalog backend through the host.",
   file: "apps/host/src/routes/index.tsx",
   code: `// Host route loader: preload through the component module.
-const remote = await catalogRemote.load();
-const initialData = await remote.default.preload();
+const remote = await ServerPanel.preload();
+const initialData = await remote.default.preload(); // Fetch catalog data.
 
 // The remote owns the table and its private server function.
 <ServerPanel title="Products" initialData={initialData} />

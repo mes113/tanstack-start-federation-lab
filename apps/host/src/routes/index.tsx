@@ -1,4 +1,4 @@
-import { ssrRemote } from "../components/ssr-remote";
+import { lazyRemote } from "@module-federation/tanstack/runtime";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { RemoteBoundary, RemoteError } from "../components/RemoteBoundary";
@@ -6,12 +6,13 @@ import { ChapterWorkbench } from "../components/ChapterWorkbench";
 import { BoundaryFrame } from "../components/HandbookShell";
 import { catalogChapter } from "../chapters";
 
-const catalogRemote = ssrRemote(() => import("catalog/ServerPanel"));
-const ServerPanel = catalogRemote.Component;
+const ServerPanel = lazyRemote(() => import("catalog/ServerPanel"), {
+  retryAfterMs: 300,
+});
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const remote = await catalogRemote.load().catch(() => null);
+    const remote = await ServerPanel.preload().catch(() => null);
     const initialData = remote
       ? await remote.default.preload().catch(() => null)
       : null;

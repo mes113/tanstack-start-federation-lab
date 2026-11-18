@@ -5,8 +5,9 @@
 ## Requirements and lifecycle
 
 Use Node 22 (22.18+), Node 24 (24.11+), or Node 26+, with npm workspaces.
-All four apps pin `@module-federation/tanstack` to the published npm version `0.2.0`.
-The lockfile records the registry tarball and integrity hash. Run commands from the
+This experiment pins all four apps to the preview tarball from
+[Module Federation PR #25](https://github.com/module-federation/tanstack/pull/25)
+at commit `2765be7`. The lockfile records the tarball and integrity hash. Run commands from the
 repository root unless a workspace is specified.
 
 ```sh

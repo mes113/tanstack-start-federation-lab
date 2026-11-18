@@ -2,19 +2,24 @@ import { Button } from "@lab/ui/button";
 import { ChapterWorkbench } from "../components/ChapterWorkbench";
 import { BoundaryFrame } from "../components/HandbookShell";
 import { resilienceChapter } from "../chapters";
-import { getRemoteStylesheets } from "@module-federation/tanstack/runtime";
+import {
+  getRemoteStylesheets,
+  lazyRemote,
+} from "@module-federation/tanstack/runtime";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Suspense, useState } from "react";
 import { RemoteBoundary, RemoteError } from "../components/RemoteBoundary";
 import { getHostSummary } from "../host-functions";
-import { ssrRemote } from "../components/ssr-remote";
 
-const catalogRemote = ssrRemote(() => import("catalog/ServerPanel"));
-const ordersRemote = ssrRemote(() => import("orders/OrdersPanel"));
-const warehouseRemote = ssrRemote(() => import("warehouse/WarehousePanel"));
-const Catalog = catalogRemote.Component;
-const Orders = ordersRemote.Component;
-const Warehouse = warehouseRemote.Component;
+const Catalog = lazyRemote(() => import("catalog/ServerPanel"), {
+  retryAfterMs: 300,
+});
+const Orders = lazyRemote(() => import("orders/OrdersPanel"), {
+  retryAfterMs: 300,
+});
+const Warehouse = lazyRemote(() => import("warehouse/WarehousePanel"), {
+  retryAfterMs: 300,
+});
 const faults = [
   "none",
   "orders-data",
@@ -36,15 +41,13 @@ export const Route = createFileRoute("/lab")({
       throw new Error("Intentional host loader failure");
     const [host, catalog, orders, warehouse, stylesheets] = await Promise.all([
       getHostSummary(),
-      catalogRemote
-        .load()
+      Catalog.preload()
         .then(async (module) => ({
           available: true,
           data: await module.default.preload().catch(() => null),
         }))
         .catch(() => ({ available: false, data: null })),
-      ordersRemote
-        .load()
+      Orders.preload()
         .then(async (module) => ({
           available: true,
           data: await module.default
@@ -55,8 +58,7 @@ export const Route = createFileRoute("/lab")({
             .catch(() => null),
         }))
         .catch(() => ({ available: false, data: null })),
-      warehouseRemote
-        .load()
+      Warehouse.preload()
         .then(() => true)
         .catch(() => false),
       Promise.all(

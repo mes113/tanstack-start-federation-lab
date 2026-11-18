@@ -71,10 +71,10 @@ This is an in-page inspection aid, without persistent logs or a tracing service.
 
 ## SSR composition and recovery
 
-The host route loaders resolve remote modules and collect data before rendering.
-[ssr-remote.tsx](../apps/host/src/components/ssr-remote.tsx) caches component code,
-never request data. A resolved component renders synchronously during SSR; an unresolved
-browser component can still use the federation lazy loader.
+The host route loaders call `lazyRemote(...).preload()` to resolve the remote module
+before rendering. In the [catalog loader](../apps/host/src/routes/index.tsx), a separate
+call to the loaded module's `default.preload()` fetches the data for that request.
+The federation runtime shares the module load between the loader and the component.
 
 This matters during recovery: React streaming can otherwise put a resolved lazy module
 inside a hidden container that requires JavaScript to reveal. The suite checks actual
