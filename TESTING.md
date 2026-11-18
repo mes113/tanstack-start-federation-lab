@@ -80,9 +80,9 @@ protocol, not a generic assumption that every thrown handler error is HTTP 500.
 
 **A successful HTML string check alone is insufficient for full SSR.** React streaming
 can send a resolved lazy module inside a hidden container and rely on a script to reveal
-it. This appeared during recovery of the warehouse remote. `ssr-remote.tsx` caches only
-the loaded component module, and the route loader resolves it before rendering. SSR then
-renders the component synchronously; hydration can still load it lazily in the browser.
+it. This appeared during recovery of the warehouse remote. The route loader awaits
+`lazyRemote.preload()` to resolve the component module before rendering. SSR then renders
+the component synchronously. Hydration can still load the module lazily in the browser.
 Request data stays in each loader result, never in the module cache. Tests assert actual
 visibility with JavaScript disabled both before and after remote recovery.
 

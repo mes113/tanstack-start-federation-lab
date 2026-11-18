@@ -67,9 +67,9 @@ export const resilienceChapter = {
   file: "apps/host/src/routes/lab.tsx",
   code: `// Each component loads independently in the route loader.
 await Promise.all([
-  catalogRemote.load(),
-  ordersRemote.load(),
-  warehouseRemote.load(),
+  Catalog.preload(),
+  Orders.preload(),
+  Warehouse.preload(),
 ]);
 
 // Each rendered module gets its own error boundary.
