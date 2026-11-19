@@ -80,9 +80,9 @@ protocol, not a generic assumption that every thrown handler error is HTTP 500.
 
 **A successful HTML string check alone is insufficient for full SSR.** React streaming
 can send a resolved lazy module inside a hidden container and rely on a script to reveal
-it. This appeared during recovery of the warehouse remote. `ssr-remote.tsx` caches only
-the loaded component module, and the route loader resolves it before rendering. SSR then
-renders the component synchronously; hydration can still load it lazily in the browser.
+it. This appeared during recovery of the warehouse remote. The route loader awaits
+`lazyRemote.preload()` to resolve the component module before rendering. SSR then renders
+the component synchronously. Hydration can still load the module lazily in the browser.
 Request data stays in each loader result, never in the module cache. Tests assert actual
 visibility with JavaScript disabled both before and after remote recovery.
 
@@ -191,6 +191,14 @@ record the actual counters, memory samples, p50/p95 and budgets. Metrics are ava
 when `LAB_TEST_MODE=1`; normal dev does not expose the test metrics endpoint.
 
 ## Recorded verification and tooling
+
+For the 0.3.0 SSR regression, `npm run test:multi` and `npm run test:multi:dev`
+exercise five concurrent first SSR requests to a fresh host, then the first page
+request after each unavailable remote recovers. They check the raw HTML for
+hidden React streaming segments and verify remote content with JavaScript disabled.
+The same suite checks a browser call to a host-owned server function after federation
+initializes. This covers the Rsbuild path. The upstream Vite-only dev fix is outside
+the lab's test matrix.
 
 Validated on 2026-11-14 with Node 24.22.1, Rstest / `@rstest/playwright` 0.12.6,
 Playwright 1.65.1, Rslint 0.10.1 and the published `@module-federation/tanstack` 0.2.0:

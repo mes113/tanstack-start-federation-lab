@@ -6,16 +6,19 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { ComponentProps } from "react";
 import type OrdersPanel from "orders/OrdersPanel";
-import { ssrRemote } from "../components/ssr-remote";
+import { lazyRemote } from "@module-federation/tanstack/runtime";
 import { getDemoIdentity, selectDemoIdentity } from "../session-functions";
 import { CodeExample } from "../components/CodeExample";
 import { lessons } from "../lessons";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 
-const remote = ssrRemote(async () => ({
-  default: (await import("orders/OrdersPanel")).default.Workspace,
-}));
-const Workspace = remote.Component;
+const loadOrders = () => import("orders/OrdersPanel");
+const Workspace = lazyRemote(
+  async () => ({
+    default: (await loadOrders()).default.Workspace,
+  }),
+  { retryAfterMs: 300 },
+);
 type WorkspaceData = ComponentProps<
   typeof OrdersPanel.Workspace
 >["initialData"];
@@ -34,8 +37,8 @@ export const Route = createFileRoute("/scenarios")({
     let initialData: WorkspaceData = null;
     let initialError = "";
     try {
-      await remote.load();
-      const module = await import("orders/OrdersPanel");
+      await Workspace.preload();
+      const module = await loadOrders();
       initialData = await module.default.preloadWorkspace({
         ...deps,
         delayMs: 40,

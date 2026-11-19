@@ -1,6 +1,6 @@
 import OrdersPanel from "orders/OrdersPanel";
 import WarehousePanel from "warehouse/WarehousePanel";
-import { ssrRemote } from "./components/ssr-remote";
+import { lazyRemote } from "@module-federation/tanstack/runtime";
 
 export const orders = <OrdersPanel initialData={null} />;
 export const warehouse = <WarehousePanel warehouse="Tallinn" openOrders={3} />;
@@ -10,11 +10,9 @@ export const badOrders = (
   // @ts-expect-error Orders data must use the remote DTO, not arbitrary arrays.
   <OrdersPanel initialData={{ rows: ["invalid"] }} />
 );
-const TypedWarehouse = ssrRemote(
-  () => import("warehouse/WarehousePanel"),
-).Component;
+const TypedWarehouse = lazyRemote(() => import("warehouse/WarehousePanel"));
 export const badPreloadedWrapper = (
-  // @ts-expect-error The SSR wrapper must preserve the generated remote props.
+  // @ts-expect-error The lazy remote must preserve the generated remote props.
   <TypedWarehouse warehouse="Tallinn" openOrders="three" />
 );
 export async function checkOrdersDTO() {

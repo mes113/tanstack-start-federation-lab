@@ -36,7 +36,8 @@ export async function startLab(command) {
       command,
       offlineTypes ? { MF_OFFLINE_TYPES: "1" } : {},
     );
-    await waitFor("http://127.0.0.1:3005", host);
+    // Readiness must leave remote modules cold for the first SSR request.
+    await waitFor("http://127.0.0.1:3005/guide", host);
   }
   await startHost();
   return {

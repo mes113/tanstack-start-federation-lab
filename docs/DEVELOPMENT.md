@@ -5,7 +5,7 @@
 ## Requirements and lifecycle
 
 Use Node 22 (22.18+), Node 24 (24.11+), or Node 26+, with npm workspaces.
-All four apps pin `@module-federation/tanstack` to the published npm version `0.2.0`.
+All four apps pin the published npm release `@module-federation/tanstack@0.3.0`.
 The lockfile records the registry tarball and integrity hash. Run commands from the
 repository root unless a workspace is specified.
 
@@ -155,7 +155,7 @@ of the test runner's own environment.
 | Chapter examples and guided lessons                | [chapters.ts](../apps/host/src/chapters.ts), [lessons.ts](../apps/host/src/lessons.ts)                                                                                                              |
 | Host SSR routes                                    | [routes](../apps/host/src/routes)                                                                                                                                                                   |
 | Forwarding, CSRF integration and test-only metrics | [start.ts](../apps/host/src/start.ts), [host-metrics.ts](../apps/host/src/host-metrics.ts)                                                                                                          |
-| SSR component cache and error boundaries           | [ssr-remote.tsx](../apps/host/src/components/ssr-remote.tsx), [RemoteBoundary.tsx](../apps/host/src/components/RemoteBoundary.tsx)                                                                  |
+| SSR component cache and error boundaries           | [lab.tsx](../apps/host/src/routes/lab.tsx), [RemoteBoundary.tsx](../apps/host/src/components/RemoteBoundary.tsx)                                                                                    |
 | Catalog component and private function             | [ServerPanel.tsx](../apps/remote/src/components/ServerPanel.tsx), [server-functions.ts](../apps/remote/src/server-functions.ts)                                                                     |
 | Orders and private notes UI                        | [OrdersPanel.tsx](../apps/orders/src/components/OrdersPanel.tsx), [WorkspacePanel.tsx](../apps/orders/src/components/WorkspacePanel.tsx)                                                            |
 | Private authorization, store and DTO checks        | [workspace-functions.ts](../apps/orders/src/workspace-functions.ts), [workspace-store.ts](../apps/orders/src/workspace-store.ts), [workspace-contract.ts](../apps/orders/src/workspace-contract.ts) |

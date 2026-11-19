@@ -797,7 +797,7 @@ test("handbook: topic navigation, keyboard views, ownership outlines and mobile 
   await page.getByRole("button", { name: "See the code", exact: true }).click();
   await expect(page.getByRole("tab", { name: /^Code/ })).toBeFocused();
   await expect(page.getByRole("tabpanel")).toContainText(
-    "catalogRemote.load()",
+    "ServerPanel.preload()",
   );
   await expect(page.getByTestId("remote-panel")).not.toBeVisible();
   await page.getByRole("tab", { name: /^Code/ }).press("ArrowRight");

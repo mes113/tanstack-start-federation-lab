@@ -7,6 +7,7 @@ import { expect } from "@rstest/playwright";
 const base = "http://127.0.0.1:3005";
 const catalogRpc = "/_federation/catalog/_serverFn/";
 const ordersRpc = "/_federation/orders/_serverFn/";
+const hiddenSegment = /<div\b[^>]*\bhidden\b[^>]*\bid="S:[^"]+"/;
 const report = [];
 function passed(name) {
   report.push({ name, status: "passed" });
@@ -83,6 +84,7 @@ export async function verifyMulti({
     "three component-only exposes, three Node containers, three downloaded type contracts",
   );
 
+  await restartHost();
   const htmlResponses = await Promise.all(
     Array.from({ length: 5 }, () =>
       fetch(`${base}/lab`).then(async (response) => ({
@@ -93,6 +95,11 @@ export async function verifyMulti({
   );
   for (const { status, body } of htmlResponses) {
     assert.equal(status, 200);
+    assert.doesNotMatch(
+      body,
+      hiddenSegment,
+      "first SSR responses stream remotes inline",
+    );
     assert.equal((body.match(/data-testid="product-row"/g) ?? []).length, 8);
     assert.equal((body.match(/data-testid="order-row"/g) ?? []).length, 3);
     for (const expected of [
@@ -145,6 +152,20 @@ export async function verifyMulti({
     await expect(page.getByTestId("order-row")).toHaveCount(3);
     await page.waitForTimeout(400);
     assert.equal(requests.length, 0, "SSR data reused by all remotes");
+    const previousHost = await page.getByTestId("host-server").textContent();
+    const hostRpc = page.waitForResponse(
+      (response) =>
+        response.request().method() === "GET" &&
+        new URL(response.url()).pathname.includes("/_serverFn/"),
+    );
+    await page
+      .getByRole("button", { name: "Refresh host", exact: true })
+      .click();
+    const hostReply = await hostRpc;
+    assert.equal(hostReply.status(), 200);
+    assert.equal(new URL(hostReply.url()).origin, base);
+    assert.ok(new URL(hostReply.url()).pathname.startsWith("/_serverFn/"));
+    await expect(page.getByTestId("host-server")).not.toHaveText(previousHost);
     const hostPid = (await page.getByTestId("host-server").textContent()).match(
       /PID (\d+)/,
     )[1];
@@ -387,11 +408,16 @@ export async function verifyMulti({
       fullPage: true,
     });
     await restartRemote("orders");
-    await ssr.goto(`${base}/lab`);
+    const ordersRecovery = await ssr.goto(`${base}/lab`);
+    assert.equal(ordersRecovery.status(), 200);
+    assert.doesNotMatch(await ordersRecovery.text(), hiddenSegment);
     await expect(ssr.getByTestId("order-row")).toHaveCount(3);
+    await expect(ssr.getByTestId("order-row").first()).toBeVisible();
     await expect(ssr.getByTestId("error-warehouse")).toBeVisible();
     await restartRemote("react-remote");
-    await ssr.goto(`${base}/lab`);
+    const warehouseRecovery = await ssr.goto(`${base}/lab`);
+    assert.equal(warehouseRecovery.status(), 200);
+    assert.doesNotMatch(await warehouseRecovery.text(), hiddenSegment);
     await expect(ssr.getByTestId("warehouse-panel")).toBeVisible();
     await expect(ssr.getByTestId("order-row")).toHaveCount(3);
     assert.equal(
