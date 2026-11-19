@@ -139,8 +139,8 @@ memory and reset when orders restarts. The session cookie lasts ten minutes; onl
 allowlisted cookie is forwarded to orders. This reference does not implement a database,
 production identity provider, CDN deployment or transparent upgrades of cached containers.
 
-This branch tests [Module Federation TanStack 0.3.0](https://github.com/module-federation/tanstack/releases/tag/0.3.0)
-from the tarball built at the release commit `ebb3eb3` while npm publication is pending.
+All four apps pin the published npm release
+[`@module-federation/tanstack@0.3.0`](https://www.npmjs.com/package/@module-federation/tanstack/v/0.3.0).
 The host awaits `lazyRemote.preload()` in its route loaders so remote markup streams inline
 on the first SSR response and after remote recovery. See [TESTING.md](TESTING.md) for the regression checks.
 The 0.2.0 release includes the changes exercised here: [PR #21](https://github.com/module-federation/tanstack/pull/21)
