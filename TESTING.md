@@ -192,7 +192,7 @@ when `LAB_TEST_MODE=1`; normal dev does not expose the test metrics endpoint.
 
 ## Recorded verification and tooling
 
-On the PR #25 preview branch, `npm run test:multi` and `npm run test:multi:dev`
+For the 0.3.0 SSR regression, `npm run test:multi` and `npm run test:multi:dev`
 exercise five concurrent first SSR requests to a fresh host, then the first page
 request after each unavailable remote recovers. They check the raw HTML for
 hidden React streaming segments and verify remote content with JavaScript disabled.

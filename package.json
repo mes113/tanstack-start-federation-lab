@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@module-federation/rstest": "2.9.3",
-    "@module-federation/tanstack": "https://pkg.pr.new/module-federation/tanstack/@module-federation/tanstack@2765be7",
+    "@module-federation/tanstack": "https://pkg.pr.new/module-federation/tanstack/@module-federation/tanstack@ebb3eb3",
     "@rsbuild/plugin-react": "2.1.1",
     "@rslint/core": "^0.10.1",
     "@rstest/core": "^0.12.6",
