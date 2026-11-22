@@ -24,7 +24,7 @@ See [native federation tests](TESTING.md#native-federation-and-node-ssr-tests).
 
 ## Run locally
 
-Use a Node.js version supported by [package.json](package.json): Node 22 (22.18+), Node 24 (24.11+),
+Use a Node.js version supported by [package.json](package.json): Node 22 (22.22.2+), Node 24 (24.15.0+),
 or Node 26+. The reference was validated with Node 24.22.1 and npm on Windows.
 Ports **3004–3007** must be available. The build downloads generated types from temporary local remote previews.
 

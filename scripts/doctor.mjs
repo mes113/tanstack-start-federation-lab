@@ -7,10 +7,13 @@ import { pathToFileURL } from "node:url";
 
 export const modes = ["dev", "build", "preview", "test", "federation"];
 export function supportedNode(version) {
-  const [major, minor] = version.replace(/^v/, "").split(".").map(Number);
+  const [major, minor, patch] = version
+    .replace(/^v/, "")
+    .split(".")
+    .map(Number);
   return (
-    (major === 22 && minor >= 18) ||
-    (major === 24 && minor >= 11) ||
+    (major === 22 && (minor > 22 || (minor === 22 && patch >= 2))) ||
+    (major === 24 && minor >= 15) ||
     major >= 26
   );
 }
@@ -54,7 +57,7 @@ export async function inspectEnvironment({
     "Node.js",
     supportedNode(nodeVersion)
       ? nodeVersion
-      : `${nodeVersion} is unsupported. Use Node 22.18+, 24.11+, or 26+ (odd versions below 26 are unsupported).`,
+      : `${nodeVersion} is unsupported. Use Node 22.22.2+, 24.15.0+, or 26+ (odd versions below 26 are unsupported).`,
   );
   const manifestPath = resolve(root, "package.json");
   let manifest;
