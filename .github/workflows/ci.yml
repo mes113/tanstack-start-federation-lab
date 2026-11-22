@@ -30,6 +30,26 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
 
+  node-compatibility:
+    name: Node compatibility (${{ matrix.node }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22.22.2", "24.15.0", "26.0.0"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - run: npm ci --engine-strict
+      - run: npm run test:unit
+      - run: npm run test:components
+
   coverage:
     name: Coverage
     runs-on: ubuntu-24.04
@@ -136,7 +156,7 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [quality, coverage, federation, integration]
+    needs: [quality, node-compatibility, coverage, federation, integration]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
@@ -144,11 +164,13 @@ jobs:
       - name: Require every check to succeed
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
+          NODE_COMPATIBILITY_RESULT: ${{ needs.node-compatibility.result }}
           COVERAGE_RESULT: ${{ needs.coverage.result }}
           FEDERATION_RESULT: ${{ needs.federation.result }}
           INTEGRATION_RESULT: ${{ needs.integration.result }}
         run: |
           test "$QUALITY_RESULT" = success
+          test "$NODE_COMPATIBILITY_RESULT" = success
           test "$COVERAGE_RESULT" = success
           test "$FEDERATION_RESULT" = success
           test "$INTEGRATION_RESULT" = success

@@ -39,8 +39,8 @@ dts: {
             <span className="guide-eyebrow">01 · RUN THE REFERENCE</span>
             <h2>Start all four apps.</h2>
             <p>
-              Use Node 22.18+ or 24.11+ and npm. The first build prepares the
-              remote containers and generated types.
+              Use Node 22.22.2+, 24.15.0+, or 26+ and npm. The first build
+              prepares the remote containers and generated types.
             </p>
             <CodeExample
               title="Clone, build and start"

@@ -12,11 +12,11 @@ import {
   supportedNode,
 } from "../scripts/doctor.mjs";
 
-test.each(["22.18.0", "22.20.0", "24.11.0", "26.0.0"])(
+test.each(["22.22.2", "v22.22.3", "24.15.0", "26.0.0"])(
   "accepts supported Node %s",
   (version) => expect(supportedNode(version)).toBe(true),
 );
-test.each(["20.19.0", "22.17.0", "23.0.0", "24.10.0", "25.0.0"])(
+test.each(["20.19.0", "22.22.1", "23.0.0", "24.14.9", "25.0.0"])(
   "rejects unsupported Node %s",
   (version) => expect(supportedNode(version)).toBe(false),
 );

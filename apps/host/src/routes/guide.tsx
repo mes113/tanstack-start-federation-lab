@@ -189,7 +189,7 @@ function Guide() {
         </div>
         <CodeExample
           title="Run the full reference suite"
-          file="Repository root · Node 22.18+ or 24.11+"
+          file="Repository root · Node 22.22.2+, 24.15.0+, or 26+"
           code={`npm ci
 npm run build
 npm run dev
