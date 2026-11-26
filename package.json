@@ -19,7 +19,7 @@
     "typecheck:federation": "tsc --project tsconfig.federation.json",
     "test": "node scripts/test.mjs preview",
     "test:dev": "node scripts/test.mjs dev",
-    "test:unit": "rstest run tests/unit.test.ts tests/doctor.test.ts tests/insights.test.ts",
+    "test:unit": "rstest run tests/unit.test.ts tests/doctor.test.ts tests/insights.test.ts tests/remote-errors.test.ts",
     "test:federation": "rstest run --config rstest.federation.config.ts",
     "test:components": "rstest run --config rstest.components.config.ts",
     "test:coverage": "rstest run --config rstest.coverage.config.ts",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@module-federation/rstest": "2.9.3",
-    "@module-federation/tanstack": "0.3.0",
+    "@module-federation/tanstack": "0.4.0",
     "@rsbuild/plugin-react": "2.1.1",
     "@rslint/core": "^0.10.1",
     "@rstest/core": "^0.12.6",

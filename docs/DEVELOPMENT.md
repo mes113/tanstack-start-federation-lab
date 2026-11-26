@@ -5,7 +5,7 @@
 ## Requirements and lifecycle
 
 Use Node 22 (22.22.2+), Node 24 (24.15.0+), or Node 26+, with npm workspaces.
-All four apps pin the published npm release `@module-federation/tanstack@0.3.0`.
+All four apps pin the published npm release `@module-federation/tanstack@0.4.0`.
 The lockfile records the registry tarball and integrity hash. Run commands from the
 repository root unless a workspace is specified.
 

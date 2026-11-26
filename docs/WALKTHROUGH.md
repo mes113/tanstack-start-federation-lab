@@ -94,6 +94,14 @@ To test a real outage, run each app in a separate terminal as described in
 [Development](DEVELOPMENT.md#run-one-app-at-a-time), stop orders, and refresh it while
 using catalog. Restart orders and retry. Its new backend PID identifies the recovered process.
 
+Reload `/lab` while orders is stopped. **Remote manifest diagnostics** should show
+`TANSTACK-REMOTE-FETCH-NETWORK` for Orders and suggest retrying after recovery;
+Catalog should still say **Manifest loaded**. Restart orders and reload: its
+manifest diagnostic and server-rendered panel should both recover. These manifest
+checks are separate from the backend exception and timeout cards above. For the
+HTTP, JSON, size-limit and deadline fixtures, run
+`npx rstest run tests/remote-errors.test.ts`.
+
 ## Type safety
 
 Open [/types](http://127.0.0.1:3005/types). Compare generated Warehouse props with runtime

@@ -10,6 +10,7 @@ export default defineConfig({
         "tests/coverage-comment.test.ts",
         "tests/doctor.test.ts",
         "tests/insights.test.ts",
+        "tests/remote-errors.test.ts",
       ],
     },
     "./rstest.components.config.ts",

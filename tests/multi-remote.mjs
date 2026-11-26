@@ -403,6 +403,15 @@ export async function verifyMulti({
     await expect(ssr.getByTestId("error-orders")).toBeVisible();
     await expect(ssr.getByTestId("error-warehouse")).toBeVisible();
     await expect(ssr.getByTestId("product-row")).toHaveCount(8);
+    await expect(ssr.getByTestId("manifest-orders")).toContainText(
+      "TANSTACK-REMOTE-FETCH-NETWORK",
+    );
+    await expect(ssr.getByTestId("manifest-warehouse")).toContainText(
+      "TANSTACK-REMOTE-FETCH-NETWORK",
+    );
+    await expect(ssr.getByTestId("manifest-catalog")).toContainText(
+      "Manifest loaded.",
+    );
     await ssr.screenshot({
       path: "test-results/cold-host-two-remotes-offline.png",
       fullPage: true,
@@ -413,12 +422,18 @@ export async function verifyMulti({
     assert.doesNotMatch(await ordersRecovery.text(), hiddenSegment);
     await expect(ssr.getByTestId("order-row")).toHaveCount(3);
     await expect(ssr.getByTestId("order-row").first()).toBeVisible();
+    await expect(ssr.getByTestId("manifest-orders")).toContainText(
+      "Manifest loaded.",
+    );
     await expect(ssr.getByTestId("error-warehouse")).toBeVisible();
     await restartRemote("react-remote");
     const warehouseRecovery = await ssr.goto(`${base}/lab`);
     assert.equal(warehouseRecovery.status(), 200);
     assert.doesNotMatch(await warehouseRecovery.text(), hiddenSegment);
     await expect(ssr.getByTestId("warehouse-panel")).toBeVisible();
+    await expect(ssr.getByTestId("manifest-warehouse")).toContainText(
+      "Manifest loaded.",
+    );
     await expect(ssr.getByTestId("order-row")).toHaveCount(3);
     assert.equal(
       await ssr

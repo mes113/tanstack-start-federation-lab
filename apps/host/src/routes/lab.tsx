@@ -2,10 +2,8 @@ import { Button } from "@lab/ui/button";
 import { ChapterWorkbench } from "../components/ChapterWorkbench";
 import { BoundaryFrame } from "../components/HandbookShell";
 import { resilienceChapter } from "../chapters";
-import {
-  getRemoteStylesheets,
-  lazyRemote,
-} from "@module-federation/tanstack/runtime";
+import { lazyRemote } from "@module-federation/tanstack/runtime";
+import { inspectRemoteStyles } from "../remote-styles";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Suspense, useState } from "react";
 import { RemoteBoundary, RemoteError } from "../components/RemoteBoundary";
@@ -39,7 +37,7 @@ export const Route = createFileRoute("/lab")({
   loader: async ({ deps }) => {
     if (deps.fault === "host-loader")
       throw new Error("Intentional host loader failure");
-    const [host, catalog, orders, warehouse, stylesheets] = await Promise.all([
+    const [host, catalog, orders, warehouse, manifests] = await Promise.all([
       getHostSummary(),
       Catalog.preload()
         .then(async (module) => ({
@@ -61,20 +59,21 @@ export const Route = createFileRoute("/lab")({
       Warehouse.preload()
         .then(() => true)
         .catch(() => false),
-      Promise.all(
-        [
-          [3004, "ServerPanel"],
-          [3006, "OrdersPanel"],
-          [3007, "WarehousePanel"],
-        ].map(([port, expose]) =>
-          getRemoteStylesheets(
-            `http://127.0.0.1:${port}/mf-manifest.json`,
-            `./${expose}`,
-          ).catch(() => []),
-        ),
-      ).then((lists) => lists.flat()),
+      Promise.all([
+        inspectRemoteStyles("Catalog", 3004, "./ServerPanel"),
+        inspectRemoteStyles("Orders", 3006, "./OrdersPanel"),
+        inspectRemoteStyles("Warehouse", 3007, "./WarehousePanel"),
+      ]),
     ]);
-    return { host, catalog, orders, warehouse, stylesheets, fault: deps.fault };
+    return {
+      host,
+      catalog,
+      orders,
+      warehouse,
+      manifests,
+      stylesheets: manifests.flatMap((item) => item.stylesheets),
+      fault: deps.fault,
+    };
   },
   head: ({ loaderData }) => ({
     links: loaderData?.stylesheets.map((href) => ({ href, rel: "stylesheet" })),
@@ -235,6 +234,37 @@ function Lab() {
             <span>orders state</span>
             <span>React checklist</span>
           </div>
+        </section>
+        <section
+          className="resilience-instructions"
+          aria-label="Remote manifest diagnostics"
+        >
+          <h2>Remote manifest diagnostics</h2>
+          <p>
+            Stop a remote and reload to inspect its failure. Restart it and
+            reload to retry. These checks describe manifest loading; component
+            and backend failures appear in their own panels.
+          </p>
+          <ul>
+            {data.manifests.map(({ name, error }) => (
+              <li key={name} data-testid={`manifest-${name.toLowerCase()}`}>
+                <strong>{name}: </strong>
+                {error ? (
+                  <>
+                    <code>{error.code}</code>
+                    {" — "}
+                    {error.description}{" "}
+                    {error.status !== null && `HTTP ${error.status}. `}
+                    {error.retryable
+                      ? "Retry after the remote recovers."
+                      : "Fix the remote response before retrying."}
+                  </>
+                ) : (
+                  "Manifest loaded."
+                )}
+              </li>
+            ))}
+          </ul>
         </section>
         <div className="lab-grid">
           <BoundaryFrame owner="Host">

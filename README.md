@@ -1,7 +1,7 @@
 # Federation Lab
 
 [![CI](https://github.com/mes113/tanstack-start-federation-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mes113/tanstack-start-federation-lab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Module Federation TanStack 0.3.0](https://img.shields.io/badge/Module_Federation_TanStack-0.3.0-blue)](https://github.com/module-federation/tanstack/releases/tag/0.3.0)
+[![Module Federation TanStack 0.4.0](https://img.shields.io/badge/Module_Federation_TanStack-0.4.0-blue)](https://github.com/module-federation/tanstack/releases/tag/0.4.0)
 [![Rsbuild 2.3.2](https://img.shields.io/badge/Rsbuild-2.3.2-ff6347)](https://www.npmjs.com/package/@rsbuild/core/v/2.3.2)
 [![Tests with Rstest](https://img.shields.io/badge/tested_with-Rstest-f7c94b)](TESTING.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -140,7 +140,11 @@ allowlisted cookie is forwarded to orders. This reference does not implement a d
 production identity provider, CDN deployment or transparent upgrades of cached containers.
 
 All four apps pin the published npm release
-[`@module-federation/tanstack@0.3.0`](https://www.npmjs.com/package/@module-federation/tanstack/v/0.3.0).
+[`@module-federation/tanstack@0.4.0`](https://www.npmjs.com/package/@module-federation/tanstack/v/0.4.0).
+Version 0.4.0 adds structured remote fetch errors. The `/lab` manifest diagnostics
+show the error code, HTTP status when available, and retry guidance. Network,
+timeout, HTTP, size-limit and parse failures are exercised against the published
+package, along with CommonJS SSR entry causes; see the [0.4.0 test matrix](TESTING.md#module-federation-tanstack-040).
 The host awaits `lazyRemote.preload()` in its route loaders so remote markup streams inline
 on the first SSR response and after remote recovery. See [TESTING.md](TESTING.md) for the regression checks.
 The 0.2.0 release includes the changes exercised here: [PR #21](https://github.com/module-federation/tanstack/pull/21)

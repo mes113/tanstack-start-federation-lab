@@ -84,6 +84,7 @@ await Promise.all([
     "Catalog, orders and a plain React remote render together with JS disabled.",
     "Backend errors, timeouts and React render failures have isolated fallbacks.",
     "A restarted remote recovers while healthy modules continue working.",
+    "Manifest diagnostics distinguish network, timeout, HTTP, size and parse failures with retry guidance.",
   ],
 };
 export const sessionChapter = {
