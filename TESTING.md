@@ -192,6 +192,43 @@ when `LAB_TEST_MODE=1`; normal dev does not expose the test metrics endpoint.
 
 ## Recorded verification and tooling
 
+### Module Federation TanStack 0.4.0
+
+The lab pins the published npm release, not an upstream checkout. The upstream
+[0.3.0 → 0.4.0 diff](https://github.com/module-federation/tanstack/compare/0.3.0...0.4.0)
+contains structured fetch errors (PR #28), a recovery-test correction (PR #26),
+and upstream CI/Node coverage changes (PR #27).
+
+| Applicable change              | Local verification                                                                                                                                                                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Manifest fetch errors          | `tests/remote-errors.test.ts`: real HTTP fixtures for network disconnect, deadline, HTTP status, malformed JSON, Content-Length and streamed size limits                                                              |
+| HTTP diagnostics and retries   | 400/401/403/404 are nonretryable; 408/425/429/500/502/503 are retryable. Status text and whitespace-normalized previews of at most 240 code points are retained. Stalled error bodies keep their HTTP classification. |
+| Timeout migration              | Timeout rejects with `TANSTACK-REMOTE-FETCH-TIMEOUT`; the original `AbortError` is retained as `cause`.                                                                                                               |
+| Rsbuild CommonJS SSR entry     | Fetch failures preserve `RemoteEntryError` phase, code, retryability, remote, URL and structured cause; invalid/throwing containers are nonretryable evaluation failures. A valid container still loads.              |
+| Manifest diagnostics in `/lab` | Server-rendered code, status and retry guidance; upstream bodies and internal URLs are omitted. Failed fetches can recover immediately. Missing exposes have a separate contract diagnostic.                          |
+| Inline SSR after outage        | Production/dev `tests/multi-remote.mjs`: first request after each remote restarts has visible content with JS disabled and no hidden streaming segment; manifest diagnostics recover too.                             |
+| Node support                   | Existing CI compatibility lanes exercise the lab's supported minima: 22.22.2, 24.15.0 and 26.0.0. These stricter minima remain necessary for our dependency graph.                                                    |
+
+Run the 26 focused fetch/entry/diagnostics checks with
+`npx rstest run tests/remote-errors.test.ts`. They also run in `test:unit`, coverage,
+and the full production/dev suites. The fixtures bind an ephemeral loopback port
+and close their connections during teardown. They call public package exports
+without mocking fetch or the plugin.
+
+The Vite-specific ESM loader path and its loader-only error code are outside this
+Rsbuild lab's stack. Server-function RPC failures remain distinct from manifest
+fetch errors; 0.4.0 does not turn an HTTP-200 serialized application error into a
+manifest failure. The diagnostics do not automatically retry permanent errors or
+replace already loaded containers.
+
+### Earlier validation
+
+Validated 0.4.0 locally on 2026-11-26 with Node 24.22.1 on Windows:
+production 116 passed; development 115 passed with the intentional production-only
+deployment skip; native federation 16 passed; coverage 108 passed with all thresholds
+met. Workspace and federation typechecks, Rslint and Prettier passed. The GitHub CI
+run additionally checks Linux and the three supported Node minimum versions.
+
 For the 0.3.0 SSR regression, `npm run test:multi` and `npm run test:multi:dev`
 exercise five concurrent first SSR requests to a fresh host, then the first page
 request after each unavailable remote recovers. They check the raw HTML for
