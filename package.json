@@ -33,7 +33,7 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@module-federation/rstest": "2.9.3",
+    "@module-federation/rstest": "2.9.4",
     "@module-federation/tanstack": "0.4.0",
     "@rsbuild/plugin-react": "2.1.1",
     "@rslint/core": "^0.10.1",
@@ -43,8 +43,8 @@
     "@tailwindcss/postcss": "^4.3.5",
     "@tanstack/start-storage-context": "1.167.41",
     "@testing-library/react": "16.3.3",
-    "@testing-library/user-event": "14.6.12",
-    "@types/node": "26.6.6",
+    "@testing-library/user-event": "14.6.13",
+    "@types/node": "26.6.7",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "jsdom": "31.0.1",
